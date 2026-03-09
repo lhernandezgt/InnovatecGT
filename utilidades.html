@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ventas · Innovaciones Tecnológicas de Guatemala</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f4f6fa; --surface:#fff; --surface2:#f0f3f8; --surface3:#e8ecf4;
+    --border:#dde3ed; --border2:#c8d0de;
+    --accent:#16a362; --accent-d:#0d7a49; --accent-light:#e8f8f0; --accent-glow:rgba(22,163,98,0.13);
+    --accent2:#2563eb; --accent2-light:#eff6ff;
+    --warn:#ea580c; --warn-light:#fff4ed;
+    --green:#15803d; --green-light:#f0fdf4;
+    --red:#b91c1c; --red-light:#fef2f2;
+    --gold:#92400e; --gold-light:#fffbeb;
+    --purple:#7c3aed; --purple-light:#f5f3ff;
+    --text:#0f172a; --text2:#1e293b; --muted:#64748b; --muted2:#94a3b8;
+    --h-bg:#0f172a; --h-border:#2d3f55;
+    --h-accent:#34d399; --h-accent2:#7dd3fc; --h-text:#f1f5f9; --h-muted:#94a3b8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;min-height:100vh;}
+
+  .header{background:var(--h-bg);border-bottom:1px solid var(--h-border);padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;min-height:60px;box-shadow:0 4px 20px rgba(0,0,0,0.25);}
+  .header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--h-accent),var(--h-accent2),var(--h-accent),transparent);}
+  .header-left{display:flex;align-items:center;gap:12px;}
+  .logo-box{width:38px;height:38px;background:linear-gradient(135deg,var(--h-accent),#059669);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#022c22;border-radius:9px;flex-shrink:0;}
+  .header-title .t1{font-size:14px;font-weight:700;color:var(--h-text);}
+  .header-title .t1 em{color:var(--h-accent);font-style:normal;}
+  .header-title .t2{font-size:10px;color:var(--h-muted);font-weight:400;letter-spacing:0.5px;text-transform:uppercase;}
+  .rate-pill{display:flex;align-items:center;gap:5px;padding:3px 10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;font-size:11px;}
+  .rate-pill .rl{color:var(--h-muted);}
+  .rate-pill .rv{font-family:'JetBrains Mono',monospace;color:var(--h-accent);font-weight:600;}
+
+  .main{padding:18px 26px;display:flex;flex-direction:column;gap:14px;}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);transition:box-shadow 0.2s;}
+  .card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.08);}
+  .card-header{padding:11px 18px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .card-header-left{display:flex;align-items:center;gap:9px;}
+  .card-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+  .ci-blue{background:var(--accent2-light);}
+  .ci-orange{background:var(--warn-light);}
+  .ci-green{background:var(--accent-light);}
+  .ci-purple{background:var(--purple-light);}
+  .card-title{font-size:13px;font-weight:700;color:var(--text);}
+  .card-sub{font-size:11px;color:var(--muted);font-weight:400;}
+  .card-body{padding:16px 18px;}
+
+  /* ── SUMMARY ── */
+  .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;}
+  .sc{border-radius:12px;padding:14px 16px;border:1.5px solid var(--border);position:relative;overflow:hidden;transition:transform 0.15s,box-shadow 0.15s;}
+  .sc:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.08);}
+  .sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+  .sc-facturado{background:linear-gradient(135deg,#eff6ff,#dbeafe);border-color:#93c5fd;}
+  .sc-facturado::before{background:var(--accent2);}
+  .sc-neto{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#86efac;}
+  .sc-neto::before{background:var(--accent);}
+  .sc-iva{background:linear-gradient(135deg,#fff7ed,#ffedd5);border-color:#fdba74;}
+  .sc-iva::before{background:var(--warn);}
+  .sc-lucero{background:linear-gradient(135deg,#fdf4ff,#f3e8ff);border-color:#d8b4fe;}
+  .sc-lucero::before{background:var(--purple);}
+  .sc-cindy{background:linear-gradient(135deg,#fff1f2,#ffe4e6);border-color:#fca5a5;}
+  .sc-cindy::before{background:#e11d48;}
+  .sc-costo{background:linear-gradient(135deg,#fffbeb,#fef3c7);border-color:#fcd34d;}
+  .sc-costo::before{background:#d97706;}
+  .sc-leandro{background:linear-gradient(135deg,#f0fdf4,#bbf7d0);border-color:#4ade80;}
+  .sc-leandro::before{background:var(--green);}
+
+  .sc-label{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;}
+  .sc-value{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;line-height:1.1;}
+  .sc-facturado .sc-value{color:var(--accent2);}
+  .sc-neto .sc-value{color:var(--accent);}
+  .sc-iva .sc-value{color:var(--warn);}
+  .sc-lucero .sc-value{color:var(--purple);}
+  .sc-cindy .sc-value{color:#e11d48;}
+  .sc-costo .sc-value{color:#d97706;}
+  .sc-leandro .sc-value{color:var(--green);}
+  .sc-sub{font-size:10px;color:var(--muted);margin-top:4px;line-height:1.4;}
+  .sc-pct{display:inline-block;margin-top:5px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;font-family:'JetBrains Mono',monospace;}
+  .sc-iva .sc-pct{background:#fff7ed;color:var(--warn);border:1px solid #fdba74;}
+  .sc-leandro .sc-pct{background:#dcfce7;color:var(--green);border:1px solid #86efac;}
+
+  /* ── DISTRIBUCIÓN ── */
+  .dist-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+  .di{border-radius:12px;padding:18px 20px;border:1.5px solid var(--border);position:relative;overflow:hidden;transition:transform 0.15s,box-shadow 0.15s;}
+  .di:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.09);}
+  .di::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+  .di-lucero{background:linear-gradient(135deg,#fdf4ff,#f3e8ff);border-color:#d8b4fe;}
+  .di-lucero::before{background:var(--purple);}
+  .di-cindy{background:linear-gradient(135deg,#fff1f2,#ffe4e6);border-color:#fca5a5;}
+  .di-cindy::before{background:#e11d48;}
+  .di-iva{background:linear-gradient(135deg,#fff7ed,#ffedd5);border-color:#fdba74;}
+  .di-iva::before{background:var(--warn);}
+  .di-leandro{background:linear-gradient(135deg,#f0fdf4,#bbf7d0);border-color:#4ade80;}
+  .di-leandro::before{background:var(--green);}
+
+  .di-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+  .di-name{font-size:13px;font-weight:800;}
+  .di-lucero .di-name{color:var(--purple);}
+  .di-cindy .di-name{color:#e11d48;}
+  .di-iva .di-name{color:var(--warn);}
+  .di-leandro .di-name{color:var(--green);}
+  .di-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;}
+  .di-lucero .di-badge{background:#ede9fe;color:var(--purple);border:1px solid #c4b5fd;}
+  .di-cindy .di-badge{background:#ffe4e6;color:#e11d48;border:1px solid #fca5a5;}
+  .di-iva .di-badge{background:#ffedd5;color:var(--warn);border:1px solid #fdba74;}
+  .di-leandro .di-badge{background:#dcfce7;color:var(--green);border:1px solid #86efac;}
+  .di-amount{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;line-height:1;}
+  .di-lucero .di-amount{color:var(--purple);}
+  .di-cindy .di-amount{color:#e11d48;}
+  .di-iva .di-amount{color:var(--warn);}
+  .di-leandro .di-amount{color:var(--green);}
+  .di-desc{font-size:10px;color:var(--muted);margin-top:6px;line-height:1.5;}
+  .di-pct{font-size:10px;font-weight:700;margin-top:5px;font-family:'JetBrains Mono',monospace;min-height:14px;}
+  .di-leandro .di-pct{color:var(--green);}
+  .di-iva .di-pct{color:var(--warn);}
+
+  /* ── FORMULARIO ── */
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;align-items:end;}
+  .form-item{display:flex;flex-direction:column;gap:5px;}
+  .form-item label{font-size:10px;font-weight:700;letter-spacing:0.7px;color:var(--muted);text-transform:uppercase;}
+  .input-wrap{display:flex;align-items:center;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color 0.15s,box-shadow 0.15s;}
+  .input-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);background:var(--surface);}
+  .input-wrap span{padding:7px 9px;background:var(--surface3);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:11px;border-right:1.5px solid var(--border);white-space:nowrap;flex-shrink:0;}
+  .input-wrap input,.input-wrap select{flex:1;padding:7px 9px;background:transparent;border:none;outline:none;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;min-width:0;}
+  .input-wrap select{cursor:pointer;font-family:'Outfit',sans-serif;}
+  .btn-add{padding:9px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-weight:700;font-size:12px;cursor:pointer;transition:all 0.15s;white-space:nowrap;align-self:end;}
+  .btn-add:hover{background:var(--accent-d);transform:translateY(-1px);box-shadow:0 4px 14px rgba(22,163,98,0.35);}
+
+  /* preview */
+  .preview-box{display:none;margin-top:14px;padding:12px 16px;background:var(--accent-light);border:1.5px solid #6ee7b7;border-radius:10px;}
+  .preview-title{font-size:10px;font-weight:700;letter-spacing:0.8px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+  .prev-items{display:flex;flex-wrap:wrap;gap:8px 20px;}
+  .prev-item .lbl{color:var(--muted);font-size:10px;}
+  .prev-item .val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;}
+
+  /* ── TABLA ── */
+  .table-wrapper{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:11.5px;}
+  thead tr th{padding:8px 10px;font-size:9.5px;font-weight:700;letter-spacing:0.5px;color:var(--muted2);text-transform:uppercase;background:var(--surface);border-bottom:2px solid var(--border);white-space:nowrap;text-align:left;}
+  thead tr th.r{text-align:right;}
+  thead tr th.c{text-align:center;}
+  thead tr.gh th{padding:5px 10px;font-size:8.5px;letter-spacing:1.2px;background:var(--surface2);border-bottom:none;}
+  .gh-info{color:var(--muted2);}
+  .gh-calc{color:var(--accent2);border-bottom:2px solid var(--accent2)!important;}
+  .gh-dist{color:var(--green);border-bottom:2px solid var(--green)!important;}
+  tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
+  tbody tr:hover{background:#fafbfd;}
+  td{padding:8px 10px;vertical-align:middle;}
+  .td-num{font-family:'JetBrains Mono',monospace;text-align:right;white-space:nowrap;}
+  .td-c{text-align:center;}
+  .badge-si{background:#fef2f2;color:#b91c1c;border:1px solid #fca5a5;padding:2px 7px;border-radius:20px;font-size:9.5px;font-weight:700;}
+  .badge-no{background:#f0fdf4;color:#15803d;border:1px solid #86efac;padding:2px 7px;border-radius:20px;font-size:9.5px;font-weight:700;}
+  .badge-pag{background:#f0fdf4;color:#15803d;border:1px solid #86efac;padding:2px 8px;border-radius:20px;font-size:9.5px;font-weight:700;}
+  .badge-pen{background:#fff7ed;color:#c2410c;border:1px solid #fdba74;padding:2px 8px;border-radius:20px;font-size:9.5px;font-weight:700;}
+  .del-btn{background:none;border:none;color:var(--muted2);cursor:pointer;font-size:13px;padding:3px 7px;border-radius:6px;transition:all 0.15s;}
+  .del-btn:hover{color:var(--red);background:var(--red-light);}
+  .empty-msg{text-align:center;padding:32px;color:var(--muted);font-style:italic;}
+  tr.totals-row{background:var(--surface2)!important;border-top:2px solid var(--border);border-bottom:2px solid var(--border);}
+  tr.totals-row td{font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;text-align:right;padding:9px 10px;font-size:11.5px;}
+  tr.totals-row td.lbl{font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;text-align:left;}
+
+  .di-retenido{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border-color:#7dd3fc;}
+  .di-retenido::before{background:#0284c7;}
+  .di-retenido .di-name{color:#0284c7;}
+  .di-retenido .di-badge{background:#e0f2fe;color:#0284c7;border:1px solid #7dd3fc;}
+  .di-retenido .di-amount{color:#0284c7;}
+  .venta-item {
+    display:flex; align-items:center; gap:12px; padding:11px 18px;
+    border-bottom:1px solid var(--border); transition:background 0.1s;
+  }
+  .venta-item:last-child { border-bottom:none; }
+  .venta-item:hover { background:var(--surface2); }
+  .vi-no { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted2); min-width:28px; }
+  .vi-info { flex:1; min-width:0; }
+  .vi-cliente { font-weight:700; font-size:12px; color:var(--text); }
+  .vi-desc { font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .vi-monto { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--accent2); white-space:nowrap; }
+  .vi-leandro { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--green); white-space:nowrap; }
+  .vi-badge { padding:2px 8px; border-radius:20px; font-size:9.5px; font-weight:700; white-space:nowrap; }
+  .vi-del { background:none; border:none; color:var(--muted2); cursor:pointer; font-size:14px; padding:4px 8px; border-radius:6px; transition:all 0.15s; flex-shrink:0; }
+  .vi-del:hover { color:var(--red); background:var(--red-light); }
+
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;}
+  input[type=number]{-moz-appearance:textfield;}
+  @media(max-width:700px){.main{padding:10px;}.header{padding:0 12px;}}
+</style>
+<script src="auth.js"></script>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo-box">ITG</div>
+    <div class="header-title">
+      <div class="t1">VENTAS <em>INNOVACIONES TECNOLÓGICAS</em> DE GUATEMALA</div>
+      <div class="t2">Control de ingresos y distribución de utilidades</div>
+    </div>
+  </div>
+  <div id="headerStats" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"></div>
+</div>
+
+<div class="main">
+
+  <!-- RESUMEN GENERAL -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <div class="card-icon ci-blue">📊</div>
+        <div>
+          <div class="card-title">Resumen General</div>
+          <div class="card-sub" id="resumenSub">0 ventas registradas</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="summary-grid">
+        <div class="sc sc-facturado">
+          <div class="sc-label">Total Facturado</div>
+          <div class="sc-value" id="sum_facturado">Q 0.00</div>
+          <div class="sc-sub">Monto bruto emitido</div>
+        </div>
+        <div class="sc sc-neto">
+          <div class="sc-label">Pago Neto Recibido</div>
+          <div class="sc-value" id="sum_neto">Q 0.00</div>
+          <div class="sc-sub">Facturado − Retenido</div>
+        </div>
+        <div class="sc sc-iva">
+          <div class="sc-label">IVA → SAT</div>
+          <div class="sc-value" id="sum_iva">Q 0.00</div>
+          <div class="sc-sub">12% base imponible</div>
+          <div class="sc-pct" id="sum_iva_pct">—</div>
+        </div>
+        <div class="sc sc-lucero">
+          <div class="sc-label">Lucero (10%)</div>
+          <div class="sc-value" id="sum_lucero">Q 0.00</div>
+          <div class="sc-sub">10% del monto sin IVA</div>
+        </div>
+        <div class="sc sc-cindy">
+          <div class="sc-label">Cindy (1.5%)</div>
+          <div class="sc-value" id="sum_cindy">Q 0.00</div>
+          <div class="sc-sub">1.5% del monto sin IVA</div>
+        </div>
+        <div class="sc sc-costo">
+          <div class="sc-label">Costo Productos</div>
+          <div class="sc-value" id="sum_costo">Q 0.00</div>
+          <div class="sc-sub">Desembolso total</div>
+        </div>
+        <div class="sc sc-leandro">
+          <div class="sc-label">Leandro (Neto)</div>
+          <div class="sc-value" id="sum_leandro">Q 0.00</div>
+          <div class="sc-sub">Utilidad neta final</div>
+          <div class="sc-pct" id="sum_leandro_pct">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISTRIBUCIÓN DE UTILIDADES -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <div class="card-icon ci-orange">💼</div>
+        <div>
+          <div class="card-title">Distribución de Utilidades</div>
+          <div class="card-sub">Calculado únicamente sobre ventas con estado Pagado</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="dist-grid">
+        <div class="di di-lucero">
+          <div class="di-top">
+            <div class="di-name">Lucero</div>
+            <div class="di-badge">10% base imponible</div>
+          </div>
+          <div class="di-amount" id="pagar_lucero">Q 0.00</div>
+          <div class="di-desc">10% del monto sin IVA (factura / 1.12)</div>
+        </div>
+        <div class="di di-cindy">
+          <div class="di-top">
+            <div class="di-name">Cindy</div>
+            <div class="di-badge">1.5% base imponible</div>
+          </div>
+          <div class="di-amount" id="pagar_cindy">Q 0.00</div>
+          <div class="di-desc">1.5% del monto sin IVA (factura / 1.12)</div>
+        </div>
+        <div class="di di-iva">
+          <div class="di-top">
+            <div class="di-name">SAT · IVA</div>
+            <div class="di-badge">Impuesto</div>
+          </div>
+          <div class="di-amount" id="pagar_iva">Q 0.00</div>
+          <div class="di-desc">Si retenedor: IVA base − retenido · Si no: monto × 12%</div>
+          <div class="di-pct" id="pagar_iva_pct"></div>
+        </div>
+        <div class="di di-retenido" id="card_retenido" style="display:none;">
+          <div class="di-top">
+            <div class="di-name">Retenido</div>
+            <div class="di-badge">15% del IVA</div>
+          </div>
+          <div class="di-amount" id="pagar_retenido">Q 0.00</div>
+          <div class="di-desc">Retención aplicada por clientes retenedores</div>
+        </div>
+        <div class="di di-leandro">
+          <div class="di-top">
+            <div class="di-name">Leandro</div>
+            <div class="di-badge">Utilidad neta</div>
+          </div>
+          <div class="di-amount" id="pagar_leandro">Q 0.00</div>
+          <div class="di-desc">Pago neto − IVA − Costo − Lucero − Cindy</div>
+          <div class="di-pct" id="pagar_leandro_pct"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTRAR VENTA -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <div class="card-icon ci-green">➕</div>
+        <div>
+          <div class="card-title">Registrar Venta</div>
+          <div class="card-sub">El resumen y distribución se actualizan automáticamente</div>
+        </div>
+      </div>
+      <button onclick="limpiar()" style="display:flex;align-items:center;gap:6px;padding:5px 12px;border:1.5px solid var(--border);border-radius:7px;background:var(--surface2);color:var(--muted);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--warn)';this.style.color='var(--warn)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+        🗑 Limpiar campos
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-item">
+          <label>No.</label>
+          <div class="input-wrap"><input type="text" id="f_no" placeholder="Ej: 25"></div>
+        </div>
+        <div class="form-item">
+          <label>Cliente</label>
+          <div class="input-wrap"><input type="text" id="f_cliente" placeholder="Ej: AGSA"></div>
+        </div>
+        <div class="form-item" style="grid-column:span 2;">
+          <label>Descripción</label>
+          <div class="input-wrap"><input type="text" id="f_desc" placeholder="Ej: UniFi Cloud Key Gen2"></div>
+        </div>
+        <div class="form-item">
+          <label>Monto Factura (Q)</label>
+          <div class="input-wrap"><span>Q</span><input type="number" id="f_monto" placeholder="0.00" min="0" step="0.01" oninput="previsualizar()"></div>
+        </div>
+        <div class="form-item">
+          <label>¿Retenedor IVA?</label>
+          <div class="input-wrap">
+            <select id="f_retenedor" onchange="previsualizar()">
+              <option value="NO">NO</option>
+              <option value="SI">SÍ</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-item">
+          <label>Estado</label>
+          <div class="input-wrap">
+            <select id="f_estado">
+              <option value="Pagado">Pagado</option>
+              <option value="Pendiente">Pendiente</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-item">
+          <label>Costo Productos (Q)</label>
+          <div class="input-wrap"><span>Q</span><input type="number" id="f_costo" placeholder="0.00" min="0" step="0.01" oninput="previsualizar()"></div>
+        </div>
+        <button class="btn-add" onclick="agregarVenta()">+ Agregar venta</button>
+      </div>
+
+      <!-- Preview -->
+      <div class="preview-box" id="preview">
+        <div class="preview-title">Vista previa de cálculos</div>
+        <div class="prev-items">
+          <div class="prev-item"><span class="lbl">Retenido: </span><span class="val" id="pv_ret" style="color:var(--warn);">Q 0.00</span></div>
+          <div class="prev-item"><span class="lbl">IVA SAT: </span><span class="val" id="pv_iva" style="color:var(--warn);">Q 0.00</span></div>
+          <div class="prev-item"><span class="lbl">Pago neto: </span><span class="val" id="pv_neto" style="color:var(--accent);">Q 0.00</span></div>
+          <div class="prev-item"><span class="lbl">Lucero: </span><span class="val" id="pv_lucero" style="color:var(--purple);">Q 0.00</span></div>
+          <div class="prev-item"><span class="lbl">Cindy: </span><span class="val" id="pv_cindy" style="color:#e11d48;">Q 0.00</span></div>
+          <div class="prev-item"><span class="lbl">Leandro: </span><span class="val" id="pv_leandro" style="color:var(--green);">Q 0.00</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VENTAS REGISTRADAS -->
+  <div class="card" id="listaCard" style="display:none;">
+    <div class="card-header">
+      <div class="card-header-left">
+        <div class="card-icon ci-purple">📋</div>
+        <div>
+          <div class="card-title">Ventas Registradas</div>
+          <div class="card-sub" id="listaSubtitle">0 ventas</div>
+        </div>
+      </div>
+      <button onclick="confirmarBorrarTodo()" style="display:flex;align-items:center;gap:6px;padding:5px 12px;border:1.5px solid var(--border);border-radius:7px;background:var(--surface2);color:var(--muted);font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+        🗑 Borrar todas
+      </button>
+    </div>
+    <div class="card-body" style="padding:0;">
+      <div id="listaVentas"></div>
+    </div>
+  </div>
+
+</div>
+
+<div style="padding:12px 26px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:11px;background:var(--surface);">
+  <span>Ventas ITG · Guatemala</span>
+  <span id="footerDate"></span>
+</div>
+
+<script>
+let ventas = JSON.parse(localStorage.getItem('itg_ventas') || '[]');
+
+const fmt = v => 'Q ' + (isNaN(v) ? '0.00' : parseFloat(v).toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2}));
+const num = id => parseFloat(document.getElementById(id)?.value) || 0;
+
+// CÁLCULO
+// Lucero   = 10% monto facturado
+// Cindy    = 1.5% monto facturado
+// Retenido = (monto/1.12 × 12%) × 15%  si retenedor
+// IVA SAT  = SI retenedor: (monto/1.12×12%) − retenido  |  SI NO: monto×12%
+// Pago neto = monto − retenido
+// Leandro  = pago neto − costo − lucero − cindy
+function calc(monto, esRet, costo) {
+  const base     = monto / 1.12;
+  const ivaBase  = base * 0.12;
+  const retenido = esRet ? ivaBase * 0.15 : 0;
+  const iva      = esRet ? ivaBase - retenido : monto * 0.12;
+  const pagoNeto = monto - retenido;
+  const lucero   = base * 0.10;   // 10% sobre base imponible (sin IVA)
+  const cindy    = base * 0.015;  // 1.5% sobre base imponible (sin IVA)
+  const leandro  = pagoNeto - iva - costo - lucero - cindy;
+  const ganBruta = pagoNeto - iva - costo;
+  return { iva, retenido, pagoNeto, lucero, cindy, leandro, ganBruta };
+}
+
+function previsualizar() {
+  const monto = num('f_monto');
+  if (!monto) { document.getElementById('preview').style.display='none'; return; }
+  const c = calc(monto, document.getElementById('f_retenedor').value==='SI', num('f_costo'));
+  document.getElementById('preview').style.display = '';
+  document.getElementById('pv_ret').textContent    = fmt(c.retenido);
+  document.getElementById('pv_iva').textContent    = fmt(c.iva);
+  document.getElementById('pv_neto').textContent   = fmt(c.pagoNeto);
+  document.getElementById('pv_lucero').textContent = fmt(c.lucero);
+  document.getElementById('pv_cindy').textContent  = fmt(c.cindy);
+  document.getElementById('pv_leandro').textContent= fmt(c.leandro);
+}
+
+function agregarVenta() {
+  const monto = num('f_monto');
+  if (!monto) { alert('Ingresa el monto de la factura.'); return; }
+  const esRet = document.getElementById('f_retenedor').value === 'SI';
+  const costo = num('f_costo');
+  const c = calc(monto, esRet, costo);
+  ventas.push({
+    id: Date.now(),
+    no:      document.getElementById('f_no').value.trim(),
+    cliente: document.getElementById('f_cliente').value.trim(),
+    desc:    document.getElementById('f_desc').value.trim(),
+    estado:  document.getElementById('f_estado').value,
+    monto, esRetenedor: esRet, costo, ...c
+  });
+  guardar(); recalc(); renderLista(); limpiar();
+}
+
+function limpiar() {
+  ['f_no','f_cliente','f_desc','f_monto','f_costo'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('f_retenedor').value = 'NO';
+  document.getElementById('f_estado').value    = 'Pagado';
+  document.getElementById('preview').style.display = 'none';
+}
+
+function guardar() {
+  try { localStorage.setItem('itg_ventas', JSON.stringify(ventas)); } catch(e){}
+}
+
+function renderLista() {
+  const lista = document.getElementById('listaVentas');
+  const card  = document.getElementById('listaCard');
+  document.getElementById('listaSubtitle').textContent =
+    `${ventas.length} venta${ventas.length!==1?'s':''}`;
+
+  if (!ventas.length) { card.style.display='none'; return; }
+  card.style.display = '';
+
+  lista.innerHTML = ventas.slice().reverse().map(v => `
+    <div class="venta-item">
+      <div class="vi-no">${v.no||'—'}</div>
+      <div class="vi-info">
+        <div class="vi-cliente">${v.cliente||'Sin cliente'}</div>
+        <div class="vi-desc">${v.desc||'—'}</div>
+      </div>
+      <div class="vi-monto">${fmt(v.monto)}</div>
+      <div class="vi-leandro">+${fmt(v.leandro)}</div>
+      <span class="vi-badge ${v.estado==='Pagado'?'badge-pag':'badge-pen'}">${v.estado}</span>
+      <button class="vi-del" onclick="eliminarVenta(${v.id})" title="Eliminar">✕</button>
+    </div>
+  `).join('');
+}
+
+function eliminarVenta(id) {
+  if (!confirm('¿Eliminar esta venta?')) return;
+  ventas = ventas.filter(v => v.id !== id);
+  guardar(); recalc(); renderLista();
+}
+
+function confirmarBorrarTodo() {
+  if (!ventas.length) return;
+  if (!confirm(`¿Borrar las ${ventas.length} ventas registradas? Esta acción no se puede deshacer.`)) return;
+  ventas = [];
+  guardar(); recalc(); renderLista();
+}
+
+function recalc() {
+  // RESUMEN GENERAL (todas las ventas)
+  const T = ventas.reduce((a,v)=>({
+    monto:a.monto+v.monto, iva:a.iva+v.iva, pagoNeto:a.pagoNeto+v.pagoNeto,
+    lucero:a.lucero+v.lucero, cindy:a.cindy+v.cindy, costo:a.costo+v.costo,
+    leandro:a.leandro+v.leandro, ganBruta:a.ganBruta+(v.ganBruta||0)
+  }), {monto:0,iva:0,pagoNeto:0,lucero:0,cindy:0,costo:0,leandro:0,ganBruta:0});
+
+  document.getElementById('sum_facturado').textContent = fmt(T.monto);
+  document.getElementById('sum_neto').textContent      = fmt(T.pagoNeto);
+  document.getElementById('sum_iva').textContent       = fmt(T.iva);
+  document.getElementById('sum_lucero').textContent    = fmt(T.lucero);
+  document.getElementById('sum_cindy').textContent     = fmt(T.cindy);
+  document.getElementById('sum_costo').textContent     = fmt(T.costo);
+  document.getElementById('sum_leandro').textContent   = fmt(T.leandro);
+
+  // % IVA sobre ganancia bruta
+  document.getElementById('sum_iva_pct').textContent =
+    T.ganBruta > 0 ? ((T.iva/T.ganBruta)*100).toFixed(1)+'% de ganancia bruta' : '—';
+
+  // % Leandro sobre pago neto
+  document.getElementById('sum_leandro_pct').textContent =
+    T.pagoNeto > 0 ? ((T.leandro/T.pagoNeto)*100).toFixed(1)+'% sobre pago neto' : '—';
+
+  // DISTRIBUCIÓN — solo PAGADAS
+  const P = ventas.filter(v=>v.estado==='Pagado').reduce((a,v)=>({
+    monto:a.monto+v.monto, lucero:a.lucero+v.lucero, cindy:a.cindy+v.cindy,
+    iva:a.iva+v.iva, retenido:a.retenido+v.retenido, pagoNeto:a.pagoNeto+v.pagoNeto,
+    leandro:a.leandro+v.leandro, ganBruta:a.ganBruta+(v.ganBruta||0)
+  }), {monto:0,lucero:0,cindy:0,iva:0,retenido:0,pagoNeto:0,leandro:0,ganBruta:0});
+
+  document.getElementById('pagar_lucero').textContent  = fmt(P.lucero);
+  document.getElementById('pagar_cindy').textContent   = fmt(P.cindy);
+  document.getElementById('pagar_iva').textContent     = fmt(P.iva);
+  document.getElementById('pagar_leandro').textContent = fmt(P.leandro);
+
+  // Tarjeta retenido — solo si hay retención
+  const cardRet = document.getElementById('card_retenido');
+  if (P.retenido > 0) {
+    cardRet.style.display = '';
+    document.getElementById('pagar_retenido').textContent = fmt(P.retenido);
+  } else {
+    cardRet.style.display = 'none';
+  }
+
+  document.getElementById('pagar_iva_pct').textContent =
+    P.ganBruta > 0 ? ((P.iva/P.ganBruta)*100).toFixed(1)+'% de ganancia bruta' : '';
+
+  document.getElementById('pagar_leandro_pct').textContent =
+    P.pagoNeto > 0 ? ((P.leandro/P.pagoNeto)*100).toFixed(1)+'% sobre pago neto' : '';
+
+  document.getElementById('resumenSub').textContent =
+    `${ventas.length} venta${ventas.length!==1?'s':''} registrada${ventas.length!==1?'s':''}`;
+
+  document.getElementById('headerStats').innerHTML = `
+    <div class="rate-pill"><span class="rl">Facturado</span><span class="rv">${fmt(T.monto)}</span></div>
+    <div class="rate-pill"><span class="rl">Leandro</span><span class="rv">${fmt(T.leandro)}</span></div>
+  `;
+}
+
+document.getElementById('footerDate').textContent = new Date().toLocaleDateString('es-GT',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+recalc();
+renderLista();
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  ITG_AUTH.protect(() => { recalc(); renderLista(); });
+});
+</script>
+<div style="position:fixed;bottom:14px;right:20px;z-index:999;"><button onclick="ITG_AUTH.logout()" style="padding:5px 12px;background:rgba(185,28,28,0.15);border:1px solid rgba(185,28,28,0.3);border-radius:7px;color:#fca5a5;font-family:Outfit,sans-serif;font-size:11px;font-weight:600;cursor:pointer;" onmouseover="this.style.background='rgba(185,28,28,0.3)'" onmouseout="this.style.background='rgba(185,28,28,0.15)'">⬡ Cerrar sesión</button></div>
+</body>
+</html>
