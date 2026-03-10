@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotizador de Productos</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="auth.js"></script>
+<style>
+  :root {
+    --bg: #f4f6fa;
+    --surface: #ffffff;
+    --surface2: #f0f3f8;
+    --surface3: #e8ecf4;
+    --border: #dde3ed;
+    --border2: #c8d0de;
+    --accent: #16a362;
+    --accent-d: #0d7a49;
+    --accent-light: #e8f8f0;
+    --accent-glow: rgba(22,163,98,0.13);
+    --accent2: #2563eb;
+    --accent2-light: #eff6ff;
+    --warn: #ea580c;
+    --warn-light: #fff4ed;
+    --green: #15803d;
+    --green-light: #f0fdf4;
+    --red: #b91c1c;
+    --gold: #92400e;
+    --gold-light: #fffbeb;
+    --text: #0f172a;
+    --text2: #1e293b;
+    --muted: #64748b;
+    --muted2: #94a3b8;
+    --h-bg: #0f172a;
+    --h-surface: #1e293b;
+    --h-border: #2d3f55;
+    --h-accent: #34d399;
+    --h-accent2: #7dd3fc;
+    --h-text: #f1f5f9;
+    --h-muted: #94a3b8;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; font-size:13px; min-height:100vh; }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--h-bg);
+    border-bottom: 1px solid var(--h-border);
+    padding: 0 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100; min-height: 60px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  }
+  .header::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--h-accent), var(--h-accent2), var(--h-accent), transparent);
+  }
+  .header-left { display:flex; align-items:center; gap:12px; }
+  .logo-box {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--h-accent) 0%, #059669 100%);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800;
+    color: #022c22; border-radius: 9px; flex-shrink: 0; letter-spacing: -0.5px;
+  }
+  .header-title { display:flex; flex-direction:column; gap:1px; }
+  .header-title .t1 { font-size:14px; font-weight:700; color:var(--h-text); letter-spacing:0.3px; line-height:1.2; }
+  .header-title .t1 em { color:var(--h-accent); font-style:normal; }
+  .header-title .t2 { font-size:10px; color:var(--h-muted); font-weight:400; letter-spacing:0.5px; text-transform:uppercase; }
+
+  .rates-bar { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  .rate-pill {
+    display:flex; align-items:center; gap:5px;
+    padding: 3px 10px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; font-size:11px;
+    transition: background 0.15s;
+  }
+  .rate-pill:hover { background: rgba(255,255,255,0.1); }
+  .rate-pill .rl { color:var(--h-muted); font-weight:400; }
+  .rate-pill .rv { font-family:'JetBrains Mono',monospace; color:var(--h-accent); font-weight:600; font-size:11px; }
+
+  /* ── LAYOUT ── */
+  .main { padding:18px 26px; display:flex; flex-direction:column; gap:14px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .card-header {
+    padding: 11px 18px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap:10px;
+  }
+  .card-header-left { display:flex; align-items:center; gap:9px; }
+  .card-icon {
+    width: 26px; height: 26px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center; font-size:13px; flex-shrink:0;
+  }
+  .ci-green { background:var(--accent-light); }
+  .ci-blue  { background:var(--accent2-light); }
+  .ci-orange{ background:var(--warn-light); }
+  .ci-gold  { background:var(--gold-light); }
+
+  .card-title { font-size:13px; font-weight:700; color:var(--text); }
+  .card-sub   { font-size:11px; color:var(--muted); font-weight:400; }
+
+  .card-body { padding: 16px 18px; }
+
+  /* ── INPUTS ── */
+  .config-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:12px; }
+  .config-item { display:flex; flex-direction:column; gap:5px; }
+  .config-item label { font-size:10px; font-weight:700; letter-spacing:0.7px; color:var(--muted); text-transform:uppercase; }
+
+  .input-wrap {
+    display:flex; align-items:center;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 8px; overflow:hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); background:var(--surface); }
+  .input-wrap span {
+    padding: 7px 9px;
+    background: var(--surface3); color: var(--muted);
+    font-family: 'JetBrains Mono', monospace; font-size:11px;
+    border-right: 1.5px solid var(--border); white-space:nowrap; flex-shrink:0;
+  }
+  .input-wrap input, .input-wrap select {
+    flex:1; padding: 7px 9px;
+    background: transparent; border:none; outline:none;
+    color: var(--text); font-family:'JetBrains Mono',monospace;
+    font-size:12px; font-weight:500; min-width:0;
+  }
+  .input-wrap select { cursor:pointer; }
+
+  /* ── TOGGLE ── */
+  .toggle-wrap {
+    display:flex; align-items:center; gap:9px;
+    padding: 7px 11px;
+    background:var(--surface2); border:1.5px solid var(--border); border-radius:8px;
+    cursor:pointer; transition:all 0.15s; user-select:none;
+  }
+  .toggle-wrap:hover { border-color:var(--accent); background:var(--accent-light); }
+  .toggle {
+    width:32px; height:17px; background:var(--border2); border-radius:9px;
+    position:relative; transition:background 0.2s; cursor:pointer; flex-shrink:0;
+  }
+  .toggle.on { background:var(--accent); }
+  .toggle::after {
+    content:''; position:absolute; width:11px; height:11px;
+    background:#fff; border-radius:50%; top:3px; left:3px;
+    transition:left 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.on::after { left:18px; }
+  .toggle-label { font-size:12px; color:var(--text2); font-weight:500; }
+
+  /* ── TABS ── */
+  .proveedor-tabs { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+  .tab-btn {
+    padding:5px 13px; border:1.5px solid var(--border); border-radius:7px;
+    background:var(--surface2); color:var(--muted);
+    font-family:'Outfit',sans-serif; font-size:12px; font-weight:600;
+    cursor:pointer; transition:all 0.15s;
+  }
+  .tab-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-light); }
+  .tab-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .proveedor-panel { display:none; }
+  .proveedor-panel.active { display:block; }
+  .proveedor-form { display:grid; grid-template-columns:repeat(auto-fit,minmax(145px,1fr)); gap:11px; align-items:end; }
+
+  .proveedor-result {
+    background: var(--accent-light);
+    border: 1.5px solid #6ee7b7;
+    border-radius: 10px; padding:11px 16px;
+    display:flex; align-items:center; justify-content:space-between;
+    margin-top:13px; flex-wrap:wrap; gap:12px;
+  }
+  .pr-item { display:flex; flex-direction:column; gap:2px; }
+  .pr-label { font-size:10px; font-weight:600; letter-spacing:0.8px; color:var(--muted); text-transform:uppercase; }
+  .pr-value { font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:700; color:var(--accent-d); }
+  .pr-value.warn { color:var(--warn); font-size:14px; }
+  .pr-value.dim  { color:var(--muted); font-size:14px; }
+
+  .add-to-table-btn {
+    padding: 8px 15px;
+    background: var(--accent); color:#fff;
+    border:none; border-radius:8px;
+    font-family:'Outfit',sans-serif; font-weight:700; font-size:12px;
+    cursor:pointer; transition:all 0.15s; white-space:nowrap; align-self:end;
+  }
+  .add-to-table-btn:hover { background:var(--accent-d); transform:translateY(-1px); box-shadow:0 4px 14px rgba(22,163,98,0.35); }
+
+  /* ── TABLE ── */
+  .table-wrapper { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+
+  thead tr.group-header th {
+    padding:7px 12px 5px;
+    font-size:9px; font-weight:700; letter-spacing:1.5px;
+    text-transform:uppercase; text-align:center;
+    background:var(--surface2); border-bottom:2px solid var(--border);
+  }
+  .g-compra { color:var(--muted2); }
+  .g-calc   { color:var(--gold); border-bottom-color:#d97706 !important; }
+  .g-venta  { color:var(--accent); border-bottom-color:var(--accent) !important; }
+
+  thead tr:last-child th {
+    padding:8px 12px;
+    font-size:10px; font-weight:700; letter-spacing:0.4px;
+    color:var(--muted2); text-transform:uppercase;
+    background:var(--surface); border-bottom:2px solid var(--border);
+    white-space:nowrap; text-align:left;
+  }
+  thead tr:last-child th.accent  { color:var(--accent); }
+  thead tr:last-child th.accent2 { color:var(--accent2); }
+
+  tbody tr { border-bottom:1px solid var(--border); transition:background 0.1s; }
+  tbody tr:hover { background:#fafbfd; }
+  tbody tr.xrow { background:var(--surface2) !important; border-bottom:2px solid var(--border); }
+
+  td { padding:9px 12px; vertical-align:middle; }
+  .td-num { font-family:'JetBrains Mono',monospace; font-size:12px; text-align:right; white-space:nowrap; color:var(--text2); }
+  .td-num.hl { color:var(--accent); font-weight:700; }
+  .td-num.bl { color:var(--accent2); font-weight:600; }
+  .td-num.gd { color:var(--gold); font-weight:600; }
+
+  .table-input {
+    background:transparent; border:1.5px solid transparent; border-radius:6px;
+    color:var(--text); font-family:'Outfit',sans-serif; font-size:12px; font-weight:500;
+    padding:4px 6px; width:100%; transition:all 0.15s; outline:none;
+  }
+  .table-input:focus { border-color:var(--accent); background:var(--accent-light); }
+  .table-input.num  { font-family:'JetBrains Mono',monospace; text-align:right; width:92px; }
+  .table-input.desc { width:200px; }
+  .table-input.manual-price {
+    font-family:'JetBrains Mono',monospace; text-align:right; width:110px;
+    border-color:var(--accent2); color:var(--accent2); font-weight:600;
+    background:var(--accent2-light);
+  }
+  .table-input.manual-price:focus { border-color:var(--accent2); background:#dbeafe; }
+
+  .del-btn {
+    background:none; border:none; color:var(--muted2); cursor:pointer;
+    font-size:13px; padding:4px 8px; border-radius:6px; transition:all 0.15s;
+  }
+  .del-btn:hover { color:var(--red); background:#fee2e2; }
+
+  .add-row-btn {
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    padding:9px 20px;
+    background:transparent; border:1.5px dashed var(--border2);
+    border-radius:8px; color:var(--muted); font-family:'Outfit',sans-serif;
+    font-size:12px; font-weight:500; cursor:pointer; width:100%; transition:all 0.15s;
+  }
+  .add-row-btn:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-light); }
+
+  /* ── BADGES ── */
+  .badge { display:inline-block; padding:2px 7px; border-radius:20px; font-size:10px; font-weight:700; }
+  .badge-manual { background:var(--accent2-light); color:var(--accent2); }
+  .badge-auto   { background:var(--accent-light); color:var(--accent); }
+
+  /* ── SUMMARY ── */
+  .summary-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(195px,1fr)); gap:12px; }
+  .summary-card {
+    border-radius:12px; padding:16px 18px;
+    border:1.5px solid var(--border); position:relative; overflow:hidden;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .summary-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.08); }
+  .summary-card.s-venta { background:linear-gradient(135deg,#f0fdf4,#dcfce7); border-color:#86efac; }
+  .summary-card.s-costo { background:linear-gradient(135deg,#eff6ff,#dbeafe); border-color:#93c5fd; }
+  .summary-card.s-imp   { background:linear-gradient(135deg,#fff7ed,#ffedd5); border-color:#fdba74; }
+  .summary-card.s-gan   { background:linear-gradient(135deg,#f0fdf4,#bbf7d0); border-color:#4ade80; }
+  .s-label { font-size:10px; font-weight:700; letter-spacing:1px; color:var(--muted); text-transform:uppercase; margin-bottom:7px; }
+  .s-value { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; line-height:1; }
+  .s-venta .s-value { color:var(--green); }
+  .s-costo .s-value { color:var(--accent2); }
+  .s-imp   .s-value { color:var(--warn); }
+  .s-gan   .s-value { color:var(--green); }
+  .s-sub { font-size:11px; color:var(--muted); margin-top:5px; }
+
+  /* ── EXPAND ── */
+  .expand-detail { display:grid; grid-template-columns:repeat(auto-fit,minmax(135px,1fr)); gap:9px; padding:10px 0; }
+  .ei {
+    background:var(--surface); border:1.5px solid var(--border);
+    border-radius:8px; padding:9px 12px;
+  }
+  .ei.ei-total { border-color:var(--accent); background:var(--accent-light); }
+  .ei-lbl { font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.7px; margin-bottom:3px; }
+  .ei-val { font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--text); }
+  .ei.ei-total .ei-val { color:var(--accent); font-size:15px; }
+
+  /* ── FOOTER ── */
+  .footer {
+    padding:12px 26px; border-top:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    color:var(--muted); font-size:11px; background:var(--surface);
+  }
+
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none; }
+  input[type=number] { -moz-appearance:textfield; }
+  @media(max-width:700px){ .main{padding:10px;} .header{padding:0 12px;} }
+
+  /* ── SAVE / EXPORT BAR ── */
+  .save-bar {
+    background: var(--h-surface);
+    border: 1px solid var(--h-border);
+    border-radius: 12px;
+    padding: 11px 16px;
+    display: flex; align-items: center; justify-content: space-between; gap:10px;
+    flex-wrap: wrap;
+  }
+  .save-bar-left { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .save-bar-title { font-size:12px; font-weight:700; color:var(--h-text); white-space:nowrap; }
+  .save-bar-sub { font-size:11px; color:var(--h-muted); }
+  .autosave-dot { width:7px; height:7px; border-radius:50%; background:#22c55e; display:inline-block; margin-right:3px; animation: pulse-dot 2s infinite; }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .save-bar-actions { display:flex; gap:7px; flex-wrap:wrap; }
+
+  .btn-save {
+    padding:7px 14px; border:none; border-radius:8px;
+    font-family:'Outfit',sans-serif; font-size:12px; font-weight:700;
+    cursor:pointer; transition:all 0.15s; white-space:nowrap; display:flex; align-items:center; gap:5px;
+  }
+  .btn-save.primary { background:var(--h-accent); color:#022c22; }
+  .btn-save.primary:hover { background:#6ee7b7; transform:translateY(-1px); }
+  .btn-save.secondary { background:rgba(255,255,255,0.08); color:var(--h-text); border:1px solid var(--h-border); }
+  .btn-save.secondary:hover { background:rgba(255,255,255,0.14); }
+  .btn-save.danger { background:rgba(185,28,28,0.15); color:#fca5a5; border:1px solid rgba(185,28,28,0.3); }
+  .btn-save.danger:hover { background:rgba(185,28,28,0.25); }
+  .btn-save.export-btn { background: linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff; }
+  .btn-save.export-btn:hover { background: linear-gradient(135deg,#3b82f6,#2563eb); transform:translateY(-1px); }
+
+  /* ── HISTORIAL MODAL ── */
+  .modal-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,0.65); z-index:999; backdrop-filter:blur(4px);
+    align-items:center; justify-content:center;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:16px; width:min(680px,95vw); max-height:80vh;
+    overflow:hidden; display:flex; flex-direction:column;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+    animation: slideUp 0.2s ease;
+  }
+  @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .modal-header {
+    padding:16px 20px; background:var(--h-bg); border-bottom:1px solid var(--h-border);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .modal-header h3 { font-size:15px; font-weight:700; color:var(--h-text); }
+  .modal-close { background:none; border:none; color:var(--h-muted); font-size:20px; cursor:pointer; padding:2px 8px; border-radius:6px; }
+  .modal-close:hover { color:var(--h-text); background:rgba(255,255,255,0.1); }
+  .modal-body { padding:16px 20px; overflow-y:auto; flex:1; }
+
+  .history-empty { text-align:center; padding:30px; color:var(--muted); font-style:italic; }
+  .history-item {
+    border:1.5px solid var(--border); border-radius:10px;
+    padding:13px 16px; margin-bottom:10px;
+    transition:border-color 0.15s, box-shadow 0.15s;
+    cursor:default;
+  }
+  .history-item:hover { border-color:var(--accent); box-shadow:0 2px 12px rgba(22,163,98,0.1); }
+  .hi-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .hi-name { font-size:13px; font-weight:700; color:var(--text); }
+  .hi-date { font-size:11px; color:var(--muted); }
+  .hi-stats { display:flex; gap:12px; margin-top:8px; flex-wrap:wrap; }
+  .hi-stat { font-size:11px; }
+  .hi-stat .lbl { color:var(--muted); }
+  .hi-stat .val { font-family:'JetBrains Mono',monospace; font-weight:600; }
+  .hi-stat .val.green { color:var(--green); }
+  .hi-stat .val.blue  { color:var(--accent2); }
+  .hi-stat .val.orange{ color:var(--warn); }
+  .hi-actions { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
+  .hi-btn {
+    padding:5px 12px; border-radius:6px; font-size:11px; font-weight:700;
+    cursor:pointer; border:none; font-family:'Outfit',sans-serif; transition:all 0.15s;
+  }
+  .hi-btn.load { background:var(--accent-light); color:var(--accent-d); }
+  .hi-btn.load:hover { background:var(--accent); color:#fff; }
+  .hi-btn.del  { background:#fee2e2; color:var(--red); }
+  .hi-btn.del:hover  { background:var(--red); color:#fff; }
+  .hi-btn.pdf  { background:var(--accent2-light); color:var(--accent2); }
+  .hi-btn.pdf:hover  { background:var(--accent2); color:#fff; }
+
+  /* ── NOMBRE COTIZACION ── */
+  .quote-name-wrap { display:flex; align-items:center; gap:6px; }
+  .quote-name-input {
+    background:rgba(255,255,255,0.08); border:1px solid var(--h-border);
+    border-radius:7px; padding:5px 10px; color:var(--h-text);
+    font-family:'Outfit',sans-serif; font-size:12px; font-weight:600;
+    width:210px; outline:none;
+  }
+  .quote-name-input:focus { border-color:var(--h-accent); background:rgba(255,255,255,0.12); }
+  .quote-name-input::placeholder { color:var(--h-muted); font-weight:400; }
+
+  /* ── TOAST ── */
+  .toast {
+    position:fixed; bottom:22px; right:22px; z-index:9999;
+    background:var(--h-bg); border:1px solid var(--h-border);
+    border-radius:10px; padding:12px 18px;
+    color:var(--h-text); font-size:12px; font-weight:600;
+    box-shadow:0 8px 30px rgba(0,0,0,0.3);
+    transform:translateY(80px); opacity:0;
+    transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events:none; display:flex; align-items:center; gap:8px;
+  }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .toast-icon { font-size:16px; }
+
+  /* ── PROVEEDOR BADGES ── */
+  .prov-badge {
+    display:inline-flex; align-items:center; gap:4px;
+    padding:3px 8px; border-radius:20px;
+    font-size:10px; font-weight:700; letter-spacing:0.3px; white-space:nowrap;
+  }
+  .prov-gtd   { background:#dcfce7; color:#166534; border:1px solid #86efac; }
+  .prov-amazon{ background:#fff7ed; color:#9a3412; border:1px solid #fed7aa; }
+  .prov-dell  { background:#eff6ff; color:#1e40af; border:1px solid #93c5fd; }
+  .prov-otro  { background:#f5f3ff; color:#5b21b6; border:1px solid #c4b5fd; }
+  .prov-manual{ background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; }
+
+  /* ── NOTAS ── */
+  .note-input {
+    background:transparent; border:1.5px solid transparent; border-radius:6px;
+    color:var(--muted); font-family:'Outfit',sans-serif; font-size:11px;
+    padding:3px 6px; width:100%; transition:all 0.15s; outline:none;
+    font-style:italic;
+  }
+  .note-input:focus { border-color:var(--border2); background:var(--surface2); color:var(--text); font-style:normal; }
+  .note-input::placeholder { color:var(--muted2); }
+
+  @media print {
+    .header, .save-bar, .card:nth-child(2), .footer,
+    .add-row-btn, .del-btn, .add-to-table-btn, .table-input,
+    .modal-overlay { display:none !important; }
+    .main { padding:0; }
+    body { background:#fff; }
+    .card { box-shadow:none; border:1px solid #ccc; break-inside:avoid; }
+    .print-header { display:block !important; }
+  }
+  .print-header { display:none; }
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo-box">ITG</div>
+    <div class="header-title">
+      <div class="t1">COTIZADOR <em>INNOVACIONES TECNOLÓGICAS</em> DE GUATEMALA</div>
+      <div class="t2">Sistema de cotización · Guatemala</div>
+    </div>
+  </div>
+  <div class="rates-bar" id="ratesBar"></div>
+</div>
+
+<div class="main">
+
+  <!-- SAVE / EXPORT BAR -->
+  <div class="save-bar">
+    <div class="save-bar-left">
+      <div>
+        <div class="save-bar-title"><span class="autosave-dot"></span>Guardado automático activo</div>
+        <div class="save-bar-sub" id="lastSaveLabel">Sin cambios guardados aún</div>
+      </div>
+      <div class="quote-name-wrap">
+        <input class="quote-name-input" id="quoteNameInput" type="text" placeholder="Nombre de cotización..." maxlength="60">
+      </div>
+    </div>
+    <div class="save-bar-actions">
+      <button class="btn-save secondary" onclick="openHistorial()">📂 Historial</button>
+      <button class="btn-save primary" onclick="saveToHistory()">💾 Guardar cotización</button>
+      <button class="btn-save export-btn" onclick="exportPDF()">⬇️ Exportar PDF</button>
+      <button class="btn-save danger" onclick="clearAll()">🗑 Limpiar todo</button>
+    </div>
+  </div>
+
+  <!-- MODAL HISTORIAL -->
+  <div class="modal-overlay" id="historialModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>📂 Historial de Cotizaciones</h3>
+        <button class="modal-close" onclick="closeHistorial()">✕</button>
+      </div>
+      <div class="modal-body" id="historialBody"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"><span class="toast-icon" id="toastIcon">✅</span><span id="toastMsg"></span></div>
+
+  <!-- CONFIGURACION GLOBAL -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <div class="card-icon ci-gold">⚙️</div>
+        <div><div class="card-title">Configuración Global</div><div class="card-sub">Los cambios actualizan toda la tabla automáticamente</div></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="config-grid">
+        <div class="config-item">
+          <label>Ganancia Predeterminada</label>
+          <div class="input-wrap">
+            <span>%</span>
+            <input type="number" id="cfg_ganancia" value="50" min="0" max="999" step="0.1">
+          </div>
+        </div>
+        <div class="config-item">
+          <label>ISR</label>
+          <div class="input-wrap">
+            <span>%</span>
+            <input type="number" id="cfg_isr" value="5" min="0" max="100" step="0.1">
+          </div>
+        </div>
+        <div class="config-item">
+          <label>IVA</label>
+          <div class="input-wrap">
+            <span>%</span>
+            <input type="number" id="cfg_iva" value="12" min="0" max="100" step="0.1">
+          </div>
+        </div>
+        <div class="config-item">
+          <label>Tipo de Cambio (Q/$)</label>
+          <div class="input-wrap">
+            <span>Q</span>
+            <input type="number" id="cfg_tc" value="7.70" min="1" step="0.01">
+          </div>
+        </div>
+        <div class="config-item">
+          <label>Flete por Libra</label>
+          <div class="input-wrap">
+            <span>Q</span>
+            <input type="number" id="cfg_flete" value="65" min="0" step="0.01">
+          </div>
+        </div>
+        <div class="config-item">
+          <label>Costo Financiero</label>
+          <div class="toggle-wrap" id="toggleFinanciero" onclick="toggleCostoFinanciero()">
+            <div class="toggle" id="toggleBtn"></div>
+            <span class="toggle-label" id="toggleLabel">Desactivado</span>
+          </div>
+        </div>
+        <div class="config-item" id="cfgFinancieroWrap" style="display:none;">
+          <label>% Costo Financiero</label>
+          <div class="input-wrap">
+            <span>%</span>
+            <input type="number" id="cfg_financiero" value="10" min="0" max="100" step="0.1">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALCULADORA DE PROVEEDOR -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <div class="card-icon ci-blue">🧮</div>
+        <div><div class="card-title">Calculadora por Proveedor</div><div class="card-sub">Calcula el costo unitario según origen del producto</div></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="proveedor-tabs">
+        <button class="tab-btn active" onclick="switchTab('gtd')">Guatemala Digital</button>
+        <button class="tab-btn" onclick="switchTab('amazon')">Amazon</button>
+        <button class="tab-btn" onclick="switchTab('dell')">Dell</button>
+        <button class="tab-btn" onclick="switchTab('otro')">Otro Proveedor</button>
+      </div>
+
+      <!-- Guatemala Digital -->
+      <div class="proveedor-panel active" id="panel-gtd">
+        <div class="proveedor-form">
+          <div class="config-item">
+            <label>Precio Base (Q)</label>
+            <div class="input-wrap"><span>Q</span><input type="number" id="gtd_precio" value="" placeholder="0.00" min="0" step="0.01" oninput="calcGTD()"></div>
+          </div>
+          <div class="config-item">
+            <label>Recargo Guatemala Digital</label>
+            <div class="input-wrap"><span>%</span><input type="number" id="gtd_recargo" value="3.40" min="0" step="0.01" oninput="calcGTD()"></div>
+          </div>
+          <div class="config-item">
+            <label>Descripción Producto</label>
+            <div class="input-wrap"><input type="text" id="gtd_desc" placeholder="Nombre del producto..."></div>
+          </div>
+          <div class="config-item">
+            <label>Cantidad</label>
+            <div class="input-wrap"><input type="number" id="gtd_cant" value="1" min="1" step="1" oninput="calcGTD()"></div>
+          </div>
+          <button class="add-to-table-btn" onclick="addToTable('gtd')">+ Agregar a tabla</button>
+        </div>
+        <div class="proveedor-result" id="gtd_result">
+          <div><div class="pr-label">Precio con Recargo</div><div class="pr-value" id="gtd_val">Q 0.00</div></div>
+          <div><div class="pr-label">Recargo aplicado</div><div class="pr-value" id="gtd_recargo_val" style="font-size:16px; color:var(--warn)">Q 0.00</div></div>
+          <div><div class="pr-label">Costo Unitario Final</div><div class="pr-value" id="gtd_unit">Q 0.00</div></div>
+        </div>
+      </div>
+
+      <!-- Amazon -->
+      <div class="proveedor-panel" id="panel-amazon">
+        <div class="proveedor-form">
+          <div class="config-item">
+            <label>Precio Base ($)</label>
+            <div class="input-wrap"><span>$</span><input type="number" id="amz_precio" value="" placeholder="0.00" min="0" step="0.01" oninput="calcAMZ()"></div>
+          </div>
+          <div class="config-item">
+            <label>Recargo Amazon</label>
+            <div class="input-wrap"><span>%</span><input type="number" id="amz_recargo" value="6.25" min="0" step="0.01" oninput="calcAMZ()"></div>
+          </div>
+          <div class="config-item">
+            <label>Peso (libras)</label>
+            <div class="input-wrap"><span>lb</span><input type="number" id="amz_peso" value="" placeholder="0" min="0" step="0.1" oninput="calcAMZ()"></div>
+          </div>
+          <div class="config-item">
+            <label>Descripción Producto</label>
+            <div class="input-wrap"><input type="text" id="amz_desc" placeholder="Nombre del producto..."></div>
+          </div>
+          <div class="config-item">
+            <label>Cantidad</label>
+            <div class="input-wrap"><input type="number" id="amz_cant" value="1" min="1" step="1" oninput="calcAMZ()"></div>
+          </div>
+          <button class="add-to-table-btn" onclick="addToTable('amazon')">+ Agregar a tabla</button>
+        </div>
+        <div class="proveedor-result" id="amz_result">
+          <div><div class="pr-label">Precio $ con recargo</div><div class="pr-value" id="amz_dolar">$ 0.00</div></div>
+          <div><div class="pr-label">Conversión a Q</div><div class="pr-value" id="amz_conv">Q 0.00</div></div>
+          <div><div class="pr-label">Flete</div><div class="pr-value" id="amz_flete" style="font-size:16px; color:var(--warn)">Q 0.00</div></div>
+          <div><div class="pr-label">Costo Unitario Final</div><div class="pr-value" id="amz_unit">Q 0.00</div></div>
+        </div>
+      </div>
+
+      <!-- Dell -->
+      <div class="proveedor-panel" id="panel-dell">
+        <div class="proveedor-form">
+          <div class="config-item">
+            <label>Precio Base ($)</label>
+            <div class="input-wrap"><span>$</span><input type="number" id="dell_precio" value="" placeholder="0.00" min="0" step="0.01" oninput="calcDELL()"></div>
+          </div>
+          <div class="config-item">
+            <label>Peso (libras)</label>
+            <div class="input-wrap"><span>lb</span><input type="number" id="dell_peso" value="" placeholder="0" min="0" step="0.1" oninput="calcDELL()"></div>
+          </div>
+          <div class="config-item">
+            <label>Descripción Producto</label>
+            <div class="input-wrap"><input type="text" id="dell_desc" placeholder="Nombre del producto..."></div>
+          </div>
+          <div class="config-item">
+            <label>Cantidad</label>
+            <div class="input-wrap"><input type="number" id="dell_cant" value="1" min="1" step="1" oninput="calcDELL()"></div>
+          </div>
+          <button class="add-to-table-btn" onclick="addToTable('dell')">+ Agregar a tabla</button>
+        </div>
+        <div class="proveedor-result" id="dell_result">
+          <div><div class="pr-label">Conversión a Q</div><div class="pr-value" id="dell_conv">Q 0.00</div></div>
+          <div><div class="pr-label">Flete</div><div class="pr-value" id="dell_flete" style="font-size:16px; color:var(--warn)">Q 0.00</div></div>
+          <div><div class="pr-label">Costo Unitario Final</div><div class="pr-value" id="dell_unit">Q 0.00</div></div>
+        </div>
+      </div>
+
+      <!-- Otro Proveedor -->
+      <div class="proveedor-panel" id="panel-otro">
+        <div class="proveedor-form">
+          <div class="config-item">
+            <label>Nombre del Proveedor</label>
+            <div class="input-wrap"><input type="text" id="otro_nombre" placeholder="Ej: HP, Lenovo..."></div>
+          </div>
+          <div class="config-item">
+            <label>Moneda</label>
+            <div class="input-wrap">
+              <select id="otro_moneda" class="table-input" style="width:100%; padding:8px 10px;" onchange="calcOTRO()">
+                <option value="Q">Q — Quetzales</option>
+                <option value="USD">$ — Dólares</option>
+              </select>
+            </div>
+          </div>
+          <div class="config-item">
+            <label>Precio Base</label>
+            <div class="input-wrap"><span id="otro_moneda_sym">Q</span><input type="number" id="otro_precio" value="" placeholder="0.00" min="0" step="0.01" oninput="calcOTRO()"></div>
+          </div>
+          <div class="config-item">
+            <label>Recargo / Comisión</label>
+            <div class="input-wrap"><span>%</span><input type="number" id="otro_recargo" value="0" min="0" step="0.01" oninput="calcOTRO()"></div>
+          </div>
+          <div class="config-item">
+            <label>Peso (libras) <span style="color:var(--muted); font-size:10px;">— si aplica flete</span></label>
+            <div class="input-wrap"><span>lb</span><input type="number" id="otro_peso" value="" placeholder="0" min="0" step="0.1" oninput="calcOTRO()"></div>
+          </div>
+          <div class="config-item">
+            <label>Descripción Producto</label>
+            <div class="input-wrap"><input type="text" id="otro_desc" placeholder="Nombre del producto..."></div>
+          </div>
+          <div class="config-item">
+            <label>Cantidad</label>
+            <div class="input-wrap"><input type="number" id="otro_cant" value="1" min="1" step="1" oninput="calcOTRO()"></div>
+          </div>
+          <button class="add-to-table-btn" onclick="addToTable('otro')">+ Agregar a tabla</button>
+        </div>
+        <div class="proveedor-result" id="otro_result">
+          <div><div class="pr-label">Proveedor</div><div class="pr-value" id="otro_nombre_val" style="font-size:16px; color:var(--muted)">—</div></div>
+          <div><div class="pr-label">Recargo aplicado</div><div class="pr-value" id="otro_recargo_val" style="font-size:16px; color:var(--warn)">Q 0.00</div></div>
+          <div><div class="pr-label">Flete</div><div class="pr-value" id="otro_flete_val" style="font-size:16px; color:var(--warn)">Q 0.00</div></div>
+          <div><div class="pr-label">Costo Unitario Final</div><div class="pr-value" id="otro_unit">Q 0.00</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA COTIZADOR -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <div class="card-icon ci-green">📋</div>
+        <div><div class="card-title">Cotizador de Productos</div><div class="card-sub">Todos los valores son por unidad</div></div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <span class="badge badge-manual">Precio Manual</span>
+        <span class="badge badge-auto">Precio Sugerido</span>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0;">
+      <div class="table-wrapper">
+        <table id="cotizadorTable">
+          <thead>
+            <tr class="group-header">
+              <th colspan="5" class="g-compra">COMPRA</th>
+              <th colspan="3" class="g-calc">CÁLCULOS</th>
+              <th colspan="4" class="g-venta">VENTA DE PRODUCTO</th>
+              <th></th>
+            </tr>
+            <tr>
+              <th>#</th>
+              <th>CANT</th>
+              <th style="min-width:220px;">DESCRIPCIÓN</th>
+              <th style="min-width:110px;">PROVEEDOR</th>
+              <th class="accent">COSTO UNITARIO</th>
+              <th class="accent">COSTO PRODUCTO</th>
+              <th>GANANCIA %</th>
+              <th class="accent">V. VENTA SIN IMP.</th>
+              <th class="accent">V. VENTA SUGERIDO</th>
+              <th class="accent2" style="min-width:150px;">VALOR VENTA <br><small style="font-weight:400; font-size:9px;">(editable — recalcula impuestos)</small></th>
+              <th class="accent">TOTAL VENTA</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <div style="padding: 12px 16px;">
+        <button class="add-row-btn" onclick="addRow()">＋ Agregar producto manualmente</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESUMEN -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-left">
+        <div class="card-icon ci-orange">📊</div>
+        <div><div class="card-title">Resumen General</div></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="summary-grid">
+        <div class="summary-card s-venta">
+          <div class="s-label">Venta Total</div>
+          <div class="s-value" id="sum_venta">Q 0.00</div>
+          <div class="s-sub" id="sum_items">0 productos</div>
+        </div>
+        <div class="summary-card s-costo">
+          <div class="s-label">Costo de Productos</div>
+          <div class="s-value" id="sum_costo">Q 0.00</div>
+          <div class="s-sub" id="sum_financiero_total">Financiero: Q 0.00</div>
+        </div>
+        <div class="summary-card s-imp">
+          <div class="s-label">Impuestos (ISR + IVA)</div>
+          <div class="s-value" id="sum_imp">Q 0.00</div>
+          <div class="s-sub" id="sum_imp_pct">ISR 5% + IVA 12% = 17%</div>
+        </div>
+        <div class="summary-card s-gan">
+          <div class="s-label">Ganancia Neta</div>
+          <div class="s-value" id="sum_gan">Q 0.00</div>
+          <div class="s-sub" id="sum_gan_pct">— %</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <span>Cotizador Pro · Guatemala</span>
+  <span id="footerDate"></span>
+</div>
+
+<script>
+// ========================
+// STATE
+// ========================
+let rows = [];
+let rowCounter = 0;
+let costoFinancieroActivo = false;
+
+// ========================
+// UTILS
+// ========================
+const fmt = v => 'Q ' + (isNaN(v) ? '0.00' : parseFloat(v).toLocaleString('es-GT', {minimumFractionDigits:2, maximumFractionDigits:2}));
+const fmtD = v => '$ ' + (isNaN(v) ? '0.00' : parseFloat(v).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
+const num = id => parseFloat(document.getElementById(id)?.value) || 0;
+const val = id => document.getElementById(id)?.value || '';
+
+function getCfg() {
+  return {
+    ganancia: num('cfg_ganancia') / 100,
+    isr: num('cfg_isr') / 100,
+    iva: num('cfg_iva') / 100,
+    tc: num('cfg_tc'),
+    flete: num('cfg_flete'),
+    financiero: costoFinancieroActivo ? num('cfg_financiero') / 100 : 0,
+  };
+}
+
+function impTotal(cfg) { return cfg.isr + cfg.iva; }
+
+// ========================
+// TOGGLE FINANCIERO
+// ========================
+function toggleCostoFinanciero() {
+  costoFinancieroActivo = !costoFinancieroActivo;
+  document.getElementById('toggleBtn').classList.toggle('on', costoFinancieroActivo);
+  document.getElementById('toggleLabel').textContent = costoFinancieroActivo ? 'Activado' : 'Desactivado';
+  document.getElementById('cfgFinancieroWrap').style.display = costoFinancieroActivo ? '' : 'none';
+  recalcAll();
+}
+
+// ========================
+// TABS PROVEEDOR
+// ========================
+function switchTab(tab) {
+  const tabs = ['gtd','amazon','dell','otro'];
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', tabs[i] === tab));
+  document.querySelectorAll('.proveedor-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+
+// ========================
+// CALCULADORAS PROVEEDOR
+// ========================
+function calcGTD() {
+  const precio = num('gtd_precio');
+  const rec = num('gtd_recargo') / 100;
+  const recMonto = precio * rec;
+  const total = precio + recMonto;
+  document.getElementById('gtd_val').textContent = fmt(total);
+  document.getElementById('gtd_recargo_val').textContent = fmt(recMonto);
+  document.getElementById('gtd_unit').textContent = fmt(total);
+}
+
+function calcAMZ() {
+  const cfg = getCfg();
+  const precio = num('amz_precio');
+  const rec = num('amz_recargo') / 100;
+  const peso = num('amz_peso');
+  const conRec = precio * (1 + rec);
+  const enQ = conRec * cfg.tc;
+  const flete = peso * cfg.flete;
+  const total = enQ + flete;
+  document.getElementById('amz_dolar').textContent = fmtD(conRec);
+  document.getElementById('amz_conv').textContent = fmt(enQ);
+  document.getElementById('amz_flete').textContent = fmt(flete);
+  document.getElementById('amz_unit').textContent = fmt(total);
+}
+
+function calcDELL() {
+  const cfg = getCfg();
+  const precio = num('dell_precio');
+  const peso = num('dell_peso');
+  const enQ = precio * cfg.tc;
+  const flete = peso * cfg.flete;
+  const total = enQ + flete;
+  document.getElementById('dell_conv').textContent = fmt(enQ);
+  document.getElementById('dell_flete').textContent = fmt(flete);
+  document.getElementById('dell_unit').textContent = fmt(total);
+}
+
+function calcOTRO() {
+  const cfg = getCfg();
+  const moneda = document.getElementById('otro_moneda').value;
+  const precio = num('otro_precio');
+  const recPct = num('otro_recargo') / 100;
+  const peso = num('otro_peso');
+  const nombre = document.getElementById('otro_nombre').value || '—';
+
+  // Update symbol
+  document.getElementById('otro_moneda_sym').textContent = moneda === 'USD' ? '$' : 'Q';
+
+  const precioConRec = precio * (1 + recPct);
+  const recMonto = precio * recPct;
+  let enQ = moneda === 'USD' ? precioConRec * cfg.tc : precioConRec;
+  const flete = peso * cfg.flete;
+  const total = enQ + flete;
+
+  document.getElementById('otro_nombre_val').textContent = nombre;
+  document.getElementById('otro_recargo_val').textContent = moneda === 'USD' ? fmtD(recMonto) : fmt(recMonto);
+  document.getElementById('otro_flete_val').textContent = fmt(flete);
+  document.getElementById('otro_unit').textContent = fmt(total);
+}
+
+function getCostoFromTab(tab) {
+  if (tab === 'gtd') {
+    const precio = num('gtd_precio');
+    const rec = num('gtd_recargo') / 100;
+    return precio * (1 + rec);
+  }
+  if (tab === 'amazon') {
+    const cfg = getCfg();
+    const precio = num('amz_precio');
+    const rec = num('amz_recargo') / 100;
+    const peso = num('amz_peso');
+    return precio * (1 + rec) * cfg.tc + peso * cfg.flete;
+  }
+  if (tab === 'dell') {
+    const cfg = getCfg();
+    const precio = num('dell_precio');
+    const peso = num('dell_peso');
+    return precio * cfg.tc + peso * cfg.flete;
+  }
+  if (tab === 'otro') {
+    const cfg = getCfg();
+    const moneda = document.getElementById('otro_moneda').value;
+    const precio = num('otro_precio');
+    const rec = num('otro_recargo') / 100;
+    const peso = num('otro_peso');
+    const precioConRec = precio * (1 + rec);
+    const enQ = moneda === 'USD' ? precioConRec * cfg.tc : precioConRec;
+    return enQ + peso * cfg.flete;
+  }
+  return 0;
+}
+
+function clearTab(tab) {
+  if (tab === 'gtd') {
+    document.getElementById('gtd_precio').value = '';
+    document.getElementById('gtd_desc').value = '';
+    document.getElementById('gtd_cant').value = '1';
+    document.getElementById('gtd_val').textContent = 'Q 0.00';
+    document.getElementById('gtd_recargo_val').textContent = 'Q 0.00';
+    document.getElementById('gtd_unit').textContent = 'Q 0.00';
+  } else if (tab === 'amazon') {
+    document.getElementById('amz_precio').value = '';
+    document.getElementById('amz_peso').value = '';
+    document.getElementById('amz_desc').value = '';
+    document.getElementById('amz_cant').value = '1';
+    document.getElementById('amz_dolar').textContent = '$ 0.00';
+    document.getElementById('amz_conv').textContent = 'Q 0.00';
+    document.getElementById('amz_flete').textContent = 'Q 0.00';
+    document.getElementById('amz_unit').textContent = 'Q 0.00';
+  } else if (tab === 'dell') {
+    document.getElementById('dell_precio').value = '';
+    document.getElementById('dell_peso').value = '';
+    document.getElementById('dell_desc').value = '';
+    document.getElementById('dell_cant').value = '1';
+    document.getElementById('dell_conv').textContent = 'Q 0.00';
+    document.getElementById('dell_flete').textContent = 'Q 0.00';
+    document.getElementById('dell_unit').textContent = 'Q 0.00';
+  } else if (tab === 'otro') {
+    document.getElementById('otro_precio').value = '';
+    document.getElementById('otro_peso').value = '';
+    document.getElementById('otro_desc').value = '';
+    document.getElementById('otro_cant').value = '1';
+    document.getElementById('otro_nombre').value = '';
+    document.getElementById('otro_recargo').value = '0';
+    document.getElementById('otro_nombre_val').textContent = '—';
+    document.getElementById('otro_recargo_val').textContent = 'Q 0.00';
+    document.getElementById('otro_flete_val').textContent = 'Q 0.00';
+    document.getElementById('otro_unit').textContent = 'Q 0.00';
+  }
+}
+
+function addToTable(tab) {
+  const costo = getCostoFromTab(tab);
+  const descMap = { gtd: val('gtd_desc'), amazon: val('amz_desc'), dell: val('dell_desc'), otro: val('otro_desc') };
+  const cantMap = { gtd: num('gtd_cant')||1, amazon: num('amz_cant')||1, dell: num('dell_cant')||1, otro: num('otro_cant')||1 };
+  const provMap = {
+    gtd: 'Guatemala Digital',
+    amazon: 'Amazon',
+    dell: 'Dell',
+    otro: document.getElementById('otro_nombre').value || 'Otro'
+  };
+  const desc = descMap[tab] || '';
+  const cant = cantMap[tab];
+  const proveedor = provMap[tab];
+  const provKey = tab; // gtd | amazon | dell | otro
+  if (!costo) { alert('Ingresa un precio base primero.'); return; }
+  addRow(costo, desc, cant, proveedor, provKey);
+  clearTab(tab);
+}
+
+// ========================
+// TABLE ROWS
+// ========================
+function addRow(costoUnitario = 0, desc = '', cant = 1, proveedor = '', provKey = 'manual') {
+  rowCounter++;
+  const id = rowCounter;
+  rows.push({ id, cant, desc, costoUnitario, gananciaCustom: null, manualPrice: null, proveedor, provKey, notas: '' });
+  renderTable();
+  recalcAll();
+}
+
+function deleteRow(id) {
+  rows = rows.filter(r => r.id !== id);
+  renderTable();
+  recalcAll();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center; padding:30px; color:var(--muted); font-style:italic;">Sin productos. Usa la calculadora de proveedor o el botón "Agregar producto".</td></tr>`;
+    return;
+  }
+  rows.forEach((row, idx) => {
+    const html = buildRowHTML(row, idx + 1);
+    // Parse as a temporary table to get proper TR elements
+    const tmp = document.createElement('table');
+    tmp.innerHTML = `<tbody>${html}</tbody>`;
+    const trs = tmp.querySelector('tbody').childNodes;
+    trs.forEach((tr, i) => {
+      if (i === 0) tr.id = 'row-' + row.id;
+      tbody.appendChild(tr.cloneNode(true));
+    });
+  });
+}
+
+function buildRowHTML(row, num_) {
+  const cfg = getCfg();
+  const imp = impTotal(cfg);
+  const ganPct = row.gananciaCustom !== null ? row.gananciaCustom : (cfg.ganancia * 100);
+
+  const costoUnitario = row.costoUnitario || 0;
+  const cant = row.cant || 1;
+
+  // Todo POR UNIDAD
+  const costoFinUnit = costoUnitario * cfg.financiero;
+  const costoProductoUnit = costoUnitario + costoFinUnit;
+  const gananciaUnit = costoProductoUnit * (ganPct / 100);
+  const vvSinImpUnit = costoProductoUnit + gananciaUnit;
+  const impUnit = vvSinImpUnit * imp;
+  const vvSugeridoUnit = vvSinImpUnit + impUnit;
+
+  const usaManual = row.manualPrice !== null && row.manualPrice > 0;
+  const precioVentaUnit = usaManual ? row.manualPrice : vvSugeridoUnit;
+
+  const gananciaRealUnit = usaManual
+    ? (row.manualPrice / (1 + imp)) - costoProductoUnit
+    : gananciaUnit;
+  const ganPctReal = costoProductoUnit > 0 ? ((gananciaRealUnit / costoProductoUnit) * 100) : 0;
+
+  const precioMinimoUnit = costoProductoUnit * (1 + imp);
+  const bajoMinimo = usaManual && row.manualPrice < precioMinimoUnit;
+
+  const expanded = row.expanded || false;
+  const showExpand = cant > 1;
+
+  // Proveedor badge
+  const provColors = {
+    gtd: 'prov-gtd', amazon: 'prov-amazon', dell: 'prov-dell',
+    otro: 'prov-otro', manual: 'prov-manual'
+  };
+  const provIcons = { gtd: '🏪', amazon: '📦', dell: '💻', otro: '🏭', manual: '✏️' };
+  const provKey = row.provKey || 'manual';
+  const provLabel = row.proveedor || '—';
+  const provClass = provColors[provKey] || 'prov-manual';
+  const provIcon = provIcons[provKey] || '🏭';
+
+  // Fila principal — todo unitario
+  let html = `<tr>
+    <td class="center" style="color:var(--muted); font-family:'DM Mono',monospace; vertical-align:middle;">${num_}</td>
+    <td style="vertical-align:middle;">
+      <input class="table-input num" type="number" min="1" value="${cant}" onchange="updateRow(${row.id},'cant',this.value)">
+    </td>
+    <td style="vertical-align:middle;">
+      <input class="table-input desc" type="text" value="${row.desc}" placeholder="Descripción..." onchange="updateRow(${row.id},'desc',this.value)">
+      <input class="note-input" type="text" value="${(row.notas||'').replace(/"/g,'&quot;')}" placeholder="+ Agregar nota..." onchange="updateRow(${row.id},'notas',this.value)" style="margin-top:3px; display:block;">
+    </td>
+    <td style="vertical-align:middle; text-align:center;">
+      <span class="prov-badge ${provClass}">${provIcon} ${provLabel}</span>
+    </td>
+    <td class="td-num" style="vertical-align:middle;">
+      <span style="font-weight:500;">${fmt(costoUnitario)}</span><br>
+      <input class="table-input num" type="number" min="0" step="0.01"
+        value="${costoUnitario ? costoUnitario.toFixed(2) : ''}" placeholder="0.00"
+        onchange="updateRow(${row.id},'costoUnitario',this.value)"
+        style="width:100px; font-size:11px; padding:3px 5px; color:var(--muted);" title="Editar">
+    </td>
+    <td class="td-num blue" style="vertical-align:middle;">${fmt(costoProductoUnit)}</td>
+    <td class="td-num" style="vertical-align:middle;">
+      <div style="display:flex; align-items:center; gap:4px; justify-content:flex-end;">
+        <input class="table-input num" type="number" min="0" step="0.1"
+          value="${ganPct.toFixed(1)}"
+          onchange="updateRow(${row.id},'ganancia',this.value)"
+          style="width:60px; font-size:12px; padding:4px 5px; color:var(--gold); border-color:${row.gananciaCustom !== null ? 'var(--gold)' : 'transparent'}; background:${row.gananciaCustom !== null ? 'var(--gold-light)' : 'transparent'};"
+          title="Editar % ganancia">
+        <span style="font-size:10px; color:var(--muted);">%</span>
+      </div>
+      <span style="color:${bajoMinimo ? '#c94f00' : (usaManual ? 'var(--green)' : 'var(--gold)')}; font-weight:600; font-size:11px; font-family:'JetBrains Mono',monospace;">${fmt(gananciaRealUnit)}</span>
+    </td>
+    <td class="td-num" style="vertical-align:middle;">${fmt(vvSinImpUnit)}</td>
+    <td class="td-num highlight" style="vertical-align:middle;">${fmt(vvSugeridoUnit)}</td>
+    <td style="vertical-align:middle;">
+      <div style="display:flex; flex-direction:column; gap:2px;">
+        <input class="table-input manual-price" type="number" min="0" step="0.01"
+          value="${usaManual ? row.manualPrice.toFixed(2) : ''}"
+          placeholder="${vvSugeridoUnit.toFixed(2)}"
+          onchange="updateRow(${row.id},'manual',this.value)"
+          title="Precio por unidad"
+          style="${bajoMinimo ? 'border-color:#c94f00; color:#c94f00;' : ''}">
+        <div style="font-size:10px;">
+          ${usaManual ? `<span class="badge badge-manual">Manual</span>` : `<span class="badge badge-auto">Auto</span>`}
+        </div>
+        <div style="font-size:10px; color:var(--muted); white-space:nowrap;">
+          Mín: <span style="font-family:'DM Mono',monospace; color:${bajoMinimo ? '#c94f00' : 'var(--green)'}; font-weight:600;">${fmt(precioMinimoUnit)}</span>
+        </div>
+        ${bajoMinimo ? `<div style="font-size:10px; color:#c94f00; font-weight:600;">⚠ Precio con pérdida</div>` : ''}
+      </div>
+    </td>
+    <td class="td-num highlight" style="font-size:13px; vertical-align:middle; white-space:nowrap;">
+      ${fmt(precioVentaUnit)}
+      ${showExpand ? `<br><button onclick="toggleExpand(${row.id})" style="font-size:10px; margin-top:4px; padding:2px 8px; border:1px solid var(--border); border-radius:10px; background:var(--surface2); color:var(--muted); cursor:pointer;">${expanded ? '▲ Ocultar' : '▼ Ver total'}</button>` : ''}
+    </td>
+    <td style="vertical-align:middle;"><button class="del-btn" onclick="deleteRow(${row.id})" title="Eliminar">✕</button></td>
+  </tr>`;
+
+  // Fila de detalle expandible (solo si cant > 1 y está expandida)
+  if (showExpand && expanded) {
+    const costoTotal = costoProductoUnit * cant;
+    const ganTotal = gananciaRealUnit * cant;
+    const vvSinImpTotal = vvSinImpUnit * cant;
+    const vvSugeridoTotal = vvSugeridoUnit * cant;
+    const totalVenta = precioVentaUnit * cant;
+
+    html += `
+      <tr class="xrow">
+        <td colspan="2"></td>
+        <td colspan="9" style="padding: 8px 16px;">
+          <div class="expand-detail">
+            <div class="ei">
+              <div class="ei-lbl">Cant × Costo Producto</div>
+              <div class="ei-val" style="color:var(--accent2);">${cant} × ${fmt(costoProductoUnit)} = ${fmt(costoTotal)}</div>
+            </div>
+            <div class="ei">
+              <div class="ei-lbl">Ganancia Total</div>
+              <div class="ei-val" style="color:var(--gold);">${fmt(ganTotal)}</div>
+            </div>
+            <div class="ei">
+              <div class="ei-lbl">V. Venta Sin Imp. Total</div>
+              <div class="ei-val">${fmt(vvSinImpTotal)}</div>
+            </div>
+            <div class="ei">
+              <div class="ei-lbl">V. Sugerido Total</div>
+              <div class="ei-val">${fmt(vvSugeridoTotal)}</div>
+            </div>
+            <div class="ei ei-total">
+              <div class="ei-lbl">Total Venta (${cant} uds)</div>
+              <div class="ei-val">${fmt(totalVenta)}</div>
+            </div>
+          </div>
+        </td>
+        <td></td>
+      </tr>
+    `;
+  }
+
+  return html;
+}
+
+function toggleExpand(id) {
+  const row = rows.find(r => r.id === id);
+  if (row) row.expanded = !row.expanded;
+  renderTable();
+}
+
+function updateRow(id, field, value) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  if (field === 'cant') row.cant = parseFloat(value) || 1;
+  if (field === 'desc') row.desc = value;
+  if (field === 'costoUnitario') row.costoUnitario = parseFloat(value) || 0;
+  if (field === 'ganancia') row.gananciaCustom = parseFloat(value);
+  if (field === 'notas') row.notas = value;
+  if (field === 'manual') {
+    const v = parseFloat(value);
+    row.manualPrice = (!value || isNaN(v)) ? null : v;
+  }
+  renderTable();
+  recalcAll();
+}
+
+// ========================
+// RECALC ALL
+// ========================
+function recalcAll() {
+  const cfg = getCfg();
+  const imp = impTotal(cfg);
+
+  let totalVenta = 0, totalCosto = 0, totalImpuestos = 0, totalGanancia = 0, totalFinanciero = 0;
+
+  rows.forEach(row => {
+    const ganPct = row.gananciaCustom !== null ? row.gananciaCustom / 100 : cfg.ganancia;
+    const cant = row.cant || 1;
+    const costoUnitario = row.costoUnitario || 0;
+
+    // Por unidad
+    const costoFinUnit = costoUnitario * cfg.financiero;
+    const costoProductoUnit = costoUnitario + costoFinUnit;
+    const gananciaUnit = costoProductoUnit * ganPct;
+    const vvSinImpUnit = costoProductoUnit + gananciaUnit;
+    const impUnit = vvSinImpUnit * imp;
+    const vvSugeridoUnit = vvSinImpUnit + impUnit;
+
+    const usaManual = row.manualPrice !== null && row.manualPrice > 0;
+    const precioVentaUnit = usaManual ? row.manualPrice : vvSugeridoUnit;
+    const impVentaUnit = usaManual ? (row.manualPrice * imp / (1 + imp)) : impUnit;
+    const gananciaRealUnit = usaManual ? (row.manualPrice / (1 + imp)) - costoProductoUnit : gananciaUnit;
+
+    totalVenta += precioVentaUnit * cant;
+    totalCosto += costoProductoUnit * cant;
+    totalImpuestos += impVentaUnit * cant;
+    totalFinanciero += costoFinUnit * cant;
+    totalGanancia += gananciaRealUnit * cant;
+  });
+
+  document.getElementById('sum_venta').textContent = fmt(totalVenta);
+  document.getElementById('sum_costo').textContent = fmt(totalCosto);
+  document.getElementById('sum_imp').textContent = fmt(totalImpuestos);
+  document.getElementById('sum_gan').textContent = fmt(totalGanancia);
+  document.getElementById('sum_financiero_total').textContent = 'Financiero: ' + fmt(totalFinanciero);
+  document.getElementById('sum_items').textContent = rows.length + ' producto' + (rows.length !== 1 ? 's' : '');
+  const ganPct = totalVenta > 0 ? ((totalGanancia / totalVenta) * 100).toFixed(1) : '0.0';
+  document.getElementById('sum_gan_pct').textContent = ganPct + '% sobre venta total';
+  document.getElementById('sum_imp_pct').textContent = `ISR ${(cfg.isr*100).toFixed(1)}% + IVA ${(cfg.iva*100).toFixed(1)}% = ${(imp*100).toFixed(1)}%`;
+
+  // Rates bar
+  document.getElementById('ratesBar').innerHTML = `
+    <div class="rate-pill"><span class="rl">Ganancia</span><span class="rv">${(cfg.ganancia*100).toFixed(0)}%</span></div>
+    <div class="rate-pill"><span class="rl">ISR+IVA</span><span class="rv">${(imp*100).toFixed(0)}%</span></div>
+    <div class="rate-pill"><span class="rl">T/C</span><span class="rv">Q${cfg.tc.toFixed(2)}/$</span></div>
+    <div class="rate-pill"><span class="rl">Flete</span><span class="rv">Q${cfg.flete}/lb</span></div>
+    ${costoFinancieroActivo ? `<div class="rate-pill"><span class="rl">Financiero</span><span class="rv">${(cfg.financiero*100).toFixed(1)}%</span></div>` : ''}
+  `;
+}
+
+
+// ========================
+// AUTOSAVE (localStorage)
+// ========================
+const AUTOSAVE_KEY = 'cotizador_itg_session';
+const HISTORY_KEY  = 'cotizador_itg_history';
+
+function getSessionState() {
+  return {
+    rows,
+    rowCounter,
+    costoFinancieroActivo,
+    cfg: {
+      ganancia: document.getElementById('cfg_ganancia').value,
+      isr:      document.getElementById('cfg_isr').value,
+      iva:      document.getElementById('cfg_iva').value,
+      tc:       document.getElementById('cfg_tc').value,
+      flete:    document.getElementById('cfg_flete').value,
+      financiero: document.getElementById('cfg_financiero').value,
+    },
+    quoteName: document.getElementById('quoteNameInput').value,
+  };
+}
+
+function applySessionState(state) {
+  if (!state) return;
+  rows = state.rows || [];
+  rowCounter = state.rowCounter || 0;
+  costoFinancieroActivo = state.costoFinancieroActivo || false;
+  if (state.cfg) {
+    Object.entries(state.cfg).forEach(([k, v]) => {
+      const el = document.getElementById('cfg_' + k);
+      if (el) el.value = v;
+    });
+  }
+  if (state.quoteName) document.getElementById('quoteNameInput').value = state.quoteName;
+  document.getElementById('toggleBtn').classList.toggle('on', costoFinancieroActivo);
+  document.getElementById('toggleLabel').textContent = costoFinancieroActivo ? 'Activado' : 'Desactivado';
+  document.getElementById('cfgFinancieroWrap').style.display = costoFinancieroActivo ? '' : 'none';
+  renderTable();
+  recalcAll();
+}
+
+function autoSave() {
+  try {
+    localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(getSessionState()));
+    const now = new Date().toLocaleTimeString('es-GT', {hour:'2-digit', minute:'2-digit'});
+    document.getElementById('lastSaveLabel').textContent = `Autoguardado a las ${now}`;
+  } catch(e) {}
+}
+
+function loadAutoSave() {
+  try {
+    const raw = localStorage.getItem(AUTOSAVE_KEY);
+    if (raw) { applySessionState(JSON.parse(raw)); }
+  } catch(e) {}
+}
+
+// ========================
+// SAVE TO HISTORY
+// ========================
+function saveToHistory() {
+  if (rows.length === 0) { showToast('⚠️', 'No hay productos en la cotización'); return; }
+  const cfg = getCfg();
+  const imp = impTotal(cfg);
+  let totalVenta=0, totalCosto=0, totalGan=0;
+  rows.forEach(row => {
+    const cant = row.cant||1;
+    const cf = row.costoUnitario * cfg.financiero;
+    const cp = row.costoUnitario + cf;
+    const ganPct = row.gananciaCustom !== null ? row.gananciaCustom/100 : cfg.ganancia;
+    const vvUnit = cp * (1 + ganPct);
+    const vvImp  = vvUnit * (1 + imp);
+    const usaManual = row.manualPrice !== null && row.manualPrice > 0;
+    const precio = usaManual ? row.manualPrice : vvImp;
+    const ganReal = usaManual ? (row.manualPrice/(1+imp)) - cp : cp*ganPct;
+    totalVenta += precio * cant;
+    totalCosto += cp * cant;
+    totalGan   += ganReal * cant;
+  });
+
+  const name = document.getElementById('quoteNameInput').value.trim() || `Cotización ${new Date().toLocaleDateString('es-GT')}`;
+  const entry = {
+    id: Date.now(),
+    name,
+    date: new Date().toLocaleString('es-GT'),
+    totalVenta, totalCosto, totalGan,
+    itemCount: rows.length,
+    state: getSessionState(),
+  };
+  try {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    history.unshift(entry);
+    if (history.length > 30) history.splice(30); // max 30
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    showToast('💾', `"${name}" guardada en historial`);
+  } catch(e) { showToast('❌', 'Error al guardar'); }
+}
+
+// ========================
+// HISTORIAL MODAL
+// ========================
+function openHistorial() {
+  renderHistorial();
+  document.getElementById('historialModal').classList.add('open');
+}
+function closeHistorial() {
+  document.getElementById('historialModal').classList.remove('open');
+}
+
+function renderHistorial() {
+  const body = document.getElementById('historialBody');
+  try {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    if (history.length === 0) {
+      body.innerHTML = `<div class="history-empty">No hay cotizaciones guardadas aún.<br>Usa el botón <strong>"💾 Guardar cotización"</strong> para registrar una.</div>`;
+      return;
+    }
+    body.innerHTML = history.map(e => `
+      <div class="history-item">
+        <div class="hi-top">
+          <div>
+            <div class="hi-name">${e.name}</div>
+            <div class="hi-date">📅 ${e.date} · ${e.itemCount} producto${e.itemCount!==1?'s':''}</div>
+          </div>
+        </div>
+        <div class="hi-stats">
+          <div class="hi-stat"><span class="lbl">Venta Total: </span><span class="val green">${fmt(e.totalVenta)}</span></div>
+          <div class="hi-stat"><span class="lbl">Costo: </span><span class="val blue">${fmt(e.totalCosto)}</span></div>
+          <div class="hi-stat"><span class="lbl">Ganancia Neta: </span><span class="val orange">${fmt(e.totalGan)}</span></div>
+          <div class="hi-stat"><span class="lbl">Margen: </span><span class="val green">${e.totalVenta>0?((e.totalGan/e.totalVenta)*100).toFixed(1):0}%</span></div>
+        </div>
+        <div class="hi-actions">
+          <button class="hi-btn load" onclick="loadFromHistory(${e.id}); closeHistorial()">📂 Cargar</button>
+          <button class="hi-btn pdf"  onclick="exportPDFFromHistory(${e.id})">⬇️ Exportar PDF</button>
+          <button class="hi-btn del"  onclick="deleteFromHistory(${e.id}); renderHistorial()">🗑 Eliminar</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) {
+    body.innerHTML = `<div class="history-empty">Error al leer el historial.</div>`;
+  }
+}
+
+function loadFromHistory(id) {
+  try {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    const entry = history.find(e => e.id === id);
+    if (entry && entry.state) {
+      applySessionState(entry.state);
+      showToast('📂', `"${entry.name}" cargada`);
+    }
+  } catch(e) {}
+}
+
+function deleteFromHistory(id) {
+  try {
+    let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    history = history.filter(e => e.id !== id);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch(e) {}
+}
+
+// ========================
+// CLEAR ALL
+// ========================
+function clearAll() {
+  if (rows.length === 0) return;
+  if (!confirm('¿Limpiar todos los productos y reiniciar la cotización?')) return;
+  rows = [];
+  rowCounter = 0;
+  document.getElementById('quoteNameInput').value = '';
+  localStorage.removeItem(AUTOSAVE_KEY);
+  document.getElementById('lastSaveLabel').textContent = 'Sin cambios guardados aún';
+  renderTable();
+  recalcAll();
+  showToast('🗑', 'Cotización limpiada');
+}
+
+// ========================
+// EXPORT PDF (print)
+// ========================
+function buildPrintContent(state) {
+  const s = state || getSessionState();
+  const cfgRaw = s.cfg || {};
+  const ganancia = parseFloat(cfgRaw.ganancia||50)/100;
+  const isr = parseFloat(cfgRaw.isr||5)/100;
+  const iva = parseFloat(cfgRaw.iva||12)/100;
+  const tc  = parseFloat(cfgRaw.tc||7.70);
+  const flete = parseFloat(cfgRaw.flete||65);
+  const financieroPct = s.costoFinancieroActivo ? parseFloat(cfgRaw.financiero||0)/100 : 0;
+  const imp = isr + iva;
+  const fmtQ = v => 'Q ' + (parseFloat(v)||0).toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const theRows = s.rows || [];
+  let totalVenta=0, totalCosto=0, totalGan=0, totalImp=0;
+  const rowsData = theRows.map(row => {
+    const cant = row.cant||1;
+    const cu = row.costoUnitario||0;
+    const cf = cu * financieroPct;
+    const cp = cu + cf;
+    const ganPct = row.gananciaCustom !== null ? row.gananciaCustom/100 : ganancia;
+    const vvUnit = cp*(1+ganPct);
+    const vvImp  = vvUnit*(1+imp);
+    const usaManual = row.manualPrice !== null && row.manualPrice > 0;
+    const precio = usaManual ? row.manualPrice : vvImp;
+    const ganReal = usaManual ? (row.manualPrice/(1+imp)) - cp : cp*ganPct;
+    const impUnit = usaManual ? row.manualPrice*imp/(1+imp) : vvUnit*imp;
+    totalVenta += precio*cant; totalCosto += cp*cant; totalGan += ganReal*cant; totalImp += impUnit*cant;
+    const margen = cp>0 ? ((ganReal/cp)*100).toFixed(1) : '0.0';
+    const provIcons = { gtd:'🏪', amazon:'📦', dell:'💻', otro:'🏭', manual:'✏️' };
+    const provIcon = provIcons[row.provKey||'manual'] || '🏭';
+    return `<tr>
+      <td>
+        <div style="font-weight:600;">${row.desc||'Sin descripción'}</div>
+        ${row.notas ? `<div style="font-size:10px; color:#64748b; font-style:italic; margin-top:2px;">📝 ${row.notas}</div>` : ''}
+      </td>
+      <td style="text-align:center;"><span style="font-size:10px; background:#f1f5f9; padding:2px 7px; border-radius:10px; white-space:nowrap;">${provIcon} ${row.proveedor||'—'}</span></td>
+      <td class="r">${cant}</td>
+      <td class="r">${fmtQ(cu)}</td>
+      <td class="r">${fmtQ(cp)}</td>
+      <td class="r">${fmtQ(precio)}</td>
+      <td class="r">${fmtQ(precio*cant)}</td>
+      <td class="r">${margen}%</td>
+    </tr>`;
+  }).join('');
+
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+  <title>${s.quoteName||'Cotización'} — Innovaciones Tecnológicas de Guatemala</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size:12px; color:#0f172a; background:#fff; padding:30px 36px; }
+    .print-logo { display:flex; align-items:center; gap:14px; margin-bottom:18px; padding-bottom:14px; border-bottom:3px solid #16a362; }
+    .print-logo-box { width:46px; height:46px; background:linear-gradient(135deg,#34d399,#059669); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:14px; color:#022c22; }
+    .print-logo-text h1 { font-size:16px; font-weight:800; color:#0f172a; }
+    .print-logo-text p  { font-size:11px; color:#64748b; }
+    .print-meta { display:flex; gap:24px; margin-bottom:18px; flex-wrap:wrap; }
+    .pm { display:flex; flex-direction:column; }
+    .pm .lbl { font-size:10px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:.7px; }
+    .pm .val { font-size:13px; font-weight:700; color:#0f172a; }
+    .cfg-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+    .cfg-chip { background:#f1f5f9; border:1px solid #e2e8f0; border-radius:6px; padding:4px 10px; font-size:11px; font-weight:600; color:#475569; }
+    table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+    th { background:#0f172a; color:#f1f5f9; padding:8px 10px; font-size:10px; letter-spacing:.8px; text-transform:uppercase; text-align:left; }
+    th.r { text-align:right; }
+    td { padding:8px 10px; border-bottom:1px solid #e2e8f0; vertical-align:middle; }
+    td.r { text-align:right; font-family:monospace; }
+    tr:nth-child(even) td { background:#f8fafc; }
+    .totals-row td { font-weight:700; background:#f0fdf4 !important; border-top:2px solid #16a362; }
+    .summary-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:10px; }
+    .sc { border-radius:10px; padding:13px 16px; border:1.5px solid; }
+    .sc.v { background:#f0fdf4; border-color:#86efac; }
+    .sc.c { background:#eff6ff; border-color:#93c5fd; }
+    .sc.i { background:#fff7ed; border-color:#fdba74; }
+    .sc.g { background:#f0fdf4; border-color:#4ade80; }
+    .sc .slbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:#64748b; margin-bottom:4px; }
+    .sc .sval { font-size:18px; font-weight:800; font-family:monospace; }
+    .sc.v .sval,.sc.g .sval { color:#15803d; }
+    .sc.c .sval { color:#2563eb; }
+    .sc.i .sval { color:#ea580c; }
+    .footer-print { margin-top:30px; padding-top:12px; border-top:1px solid #e2e8f0; font-size:10px; color:#94a3b8; text-align:center; }
+    @media print { body{padding:15px;} }
+  </style></head><body>
+  <div class="print-logo">
+    <div class="print-logo-box">ITG</div>
+    <div class="print-logo-text">
+      <h1>INNOVACIONES TECNOLÓGICAS DE GUATEMALA</h1>
+      <p>Sistema de Cotización · Guatemala · innovatecgt.com</p>
+    </div>
+  </div>
+  <div class="print-meta">
+    <div class="pm"><span class="lbl">Cotización</span><span class="val">${s.quoteName||'Sin nombre'}</span></div>
+    <div class="pm"><span class="lbl">Fecha</span><span class="val">${new Date().toLocaleDateString('es-GT',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</span></div>
+    <div class="pm"><span class="lbl">Productos</span><span class="val">${theRows.length} ítem${theRows.length!==1?'s':''}</span></div>
+  </div>
+  <div class="cfg-row">
+    <div class="cfg-chip">Ganancia: ${(ganancia*100).toFixed(0)}%</div>
+    <div class="cfg-chip">ISR: ${(isr*100).toFixed(1)}%</div>
+    <div class="cfg-chip">IVA: ${(iva*100).toFixed(1)}%</div>
+    <div class="cfg-chip">T/C: Q${tc.toFixed(2)}/$</div>
+    <div class="cfg-chip">Flete: Q${flete}/lb</div>
+    ${s.costoFinancieroActivo ? `<div class="cfg-chip">Financiero: ${(financieroPct*100).toFixed(1)}%</div>` : ''}
+  </div>
+  <table>
+    <thead><tr>
+      <th>Descripción</th><th>Proveedor</th><th class="r">Cant</th><th class="r">Costo Unit.</th>
+      <th class="r">Costo c/Fin.</th><th class="r">Precio Venta</th>
+      <th class="r">Total</th><th class="r">Margen</th>
+    </tr></thead>
+    <tbody>
+      ${rowsData}
+      <tr class="totals-row">
+        <td colspan="5">TOTALES</td>
+        <td class="r">${fmtQ(totalVenta)}</td>
+        <td class="r">${fmtQ(totalVenta)}</td>
+        <td class="r">${totalVenta>0?((totalGan/totalVenta)*100).toFixed(1):0}%</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="summary-grid">
+    <div class="sc v"><div class="slbl">Venta Total</div><div class="sval">${fmtQ(totalVenta)}</div></div>
+    <div class="sc c"><div class="slbl">Costo Total</div><div class="sval">${fmtQ(totalCosto)}</div></div>
+    <div class="sc i"><div class="slbl">Impuestos</div><div class="sval">${fmtQ(totalImp)}</div></div>
+    <div class="sc g"><div class="slbl">Ganancia Neta</div><div class="sval">${fmtQ(totalGan)}</div></div>
+  </div>
+  <div class="footer-print">Generado por Cotizador Pro · Innovaciones Tecnológicas de Guatemala · ${new Date().toLocaleString('es-GT')}</div>
+</body></html>`;
+}
+
+function exportPDF(state) {
+  const content = buildPrintContent(state);
+  const w = window.open('','_blank','width=900,height=700');
+  w.document.write(content);
+  w.document.close();
+  w.focus();
+  setTimeout(() => { w.print(); }, 400);
+}
+
+function exportPDFFromHistory(id) {
+  try {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    const entry = history.find(e => e.id === id);
+    if (entry && entry.state) exportPDF(entry.state);
+  } catch(e) {}
+}
+
+// ========================
+// TOAST
+// ========================
+let toastTimer;
+function showToast(icon, msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastIcon').textContent = icon;
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ========================
+// PATCH: auto-save on any change
+// ========================
+const _origRenderTable = renderTable;
+renderTable = function() { _origRenderTable(); autoSave(); };
+const _origRecalcAll = recalcAll;
+recalcAll = function() { _origRecalcAll(); autoSave(); };
+
+
+['cfg_ganancia','cfg_isr','cfg_iva','cfg_tc','cfg_flete','cfg_financiero'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', () => { renderTable(); recalcAll(); calcAMZ(); calcDELL(); });
+});
+
+// ========================
+// INIT (protegido con auth)
+// ========================
+document.addEventListener('DOMContentLoaded', () => {
+  ITG_AUTH.protect(() => {
+    document.getElementById('footerDate').textContent = new Date().toLocaleDateString('es-GT', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    loadAutoSave();
+    if (rows.length === 0) { renderTable(); recalcAll(); }
+    document.getElementById('historialModal').addEventListener('click', function(e){ if(e.target===this) closeHistorial(); });
+  });
+});
+</script>
+
+<!-- LOGOUT BUTTON -->
+<div style="position:fixed;bottom:14px;right:20px;z-index:999;">
+  <button onclick="ITG_AUTH.logout()" style="padding:5px 12px;background:rgba(185,28,28,0.15);border:1px solid rgba(185,28,28,0.3);border-radius:7px;color:#fca5a5;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;" onmouseover="this.style.background='rgba(185,28,28,0.3)'" onmouseout="this.style.background='rgba(185,28,28,0.15)'">⬡ Cerrar sesión</button>
+</div>
+
+</body>
+</html>
