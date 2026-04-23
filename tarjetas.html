@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mis Tarjetas">
+<title>Mis Tarjetas</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0D1B2A;
+    color: #fff;
+    min-height: 100vh;
+    padding: 24px 20px 40px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .header .date-label {
+    font-size: 13px;
+    color: #6B8BAE;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .header .date-full {
+    font-size: 18px;
+    font-weight: 500;
+    color: #E8F0F8;
+  }
+
+  .main-card {
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .main-card.infinite {
+    background: linear-gradient(135deg, #1E3A5F 0%, #0D2440 100%);
+    border: 1px solid #2A4F7A;
+  }
+
+  .main-card.connect {
+    background: linear-gradient(135deg, #0F3D2E 0%, #072A1F 100%);
+    border: 1px solid #1A5C42;
+  }
+
+  .main-card .use-label {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .main-card.infinite .use-label { color: #6B9CC7; }
+  .main-card.connect .use-label { color: #4DAA80; }
+
+  .main-card .card-title {
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #fff;
+  }
+
+  .main-card .card-sub {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .main-card.infinite .card-sub { color: #7AABD4; }
+  .main-card.connect .card-sub { color: #5BB88D; }
+
+  .progress-section { margin-bottom: 6px; }
+
+  .progress-bg {
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    height: 6px;
+    margin-bottom: 8px;
+  }
+
+  .progress-fill {
+    height: 6px;
+    border-radius: 6px;
+    transition: width 0.6s ease;
+  }
+
+  .infinite .progress-fill { background: #5BA3E0; }
+  .connect .progress-fill { background: #3DC48A; }
+
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+  }
+
+  .infinite .progress-labels { color: #6B9CC7; }
+  .connect .progress-labels { color: #4DAA80; }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .metric {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+
+  .metric .val {
+    font-size: 22px;
+    font-weight: 600;
+    color: #E8F0F8;
+  }
+
+  .metric .lbl {
+    font-size: 11px;
+    color: #6B8BAE;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .next-change {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .next-change .nc-lbl {
+    font-size: 12px;
+    color: #6B8BAE;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .next-change .nc-val {
+    font-size: 13px;
+    font-weight: 500;
+    color: #E8F0F8;
+    text-align: right;
+    max-width: 55%;
+  }
+
+  .schedule {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 18px;
+  }
+
+  .schedule-title {
+    font-size: 11px;
+    color: #6B8BAE;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+
+  .sched-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .sched-row:last-child { border-bottom: none; }
+  .sched-row.active-row { background: rgba(255,255,255,0.04); margin: 0 -8px; padding: 10px 8px; border-radius: 8px; }
+
+  .sched-period {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #C8D8E8;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-infinite { background: #5BA3E0; }
+  .dot-connect { background: #3DC48A; }
+
+  .sched-card {
+    font-size: 12px;
+    color: #6B8BAE;
+  }
+
+  .active-indicator {
+    font-size: 10px;
+    background: rgba(255,255,255,0.12);
+    color: #E8F0F8;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 11px;
+    color: #3A5470;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="date-label">Hoy</div>
+  <div class="date-full" id="dateFull">—</div>
+</div>
+
+<div class="main-card" id="mainCard">
+  <div class="use-label">Usa esta tarjeta hoy</div>
+  <div class="card-title" id="cardTitle">—</div>
+  <div class="card-sub" id="cardSub">—</div>
+  <div class="progress-section">
+    <div class="progress-bg">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-labels">
+      <span id="progStart">—</span>
+      <span id="progDays" style="font-weight:500"></span>
+      <span id="progEnd">—</span>
+    </div>
+  </div>
+</div>
+
+<div class="metrics">
+  <div class="metric">
+    <div class="val" id="daysLeft">—</div>
+    <div class="lbl">Días restantes</div>
+  </div>
+  <div class="metric">
+    <div class="val" id="daysFloat">—</div>
+    <div class="lbl">Días hasta pago</div>
+  </div>
+  <div class="metric">
+    <div class="val" id="cutDate">—</div>
+    <div class="lbl">Próximo corte</div>
+  </div>
+  <div class="metric">
+    <div class="val" id="payDate">—</div>
+    <div class="lbl">Fecha de pago</div>
+  </div>
+</div>
+
+<div class="next-change">
+  <div class="nc-lbl">Próximo cambio</div>
+  <div class="nc-val" id="nextChange">—</div>
+</div>
+
+<div class="schedule">
+  <div class="schedule-title">Distribución mensual</div>
+  <div class="sched-row" id="row1">
+    <div class="sched-period"><div class="dot dot-infinite"></div>Días 1 – 18</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="sched-card">Visa Infinite</div>
+    </div>
+  </div>
+  <div class="sched-row" id="row2">
+    <div class="sched-period"><div class="dot dot-connect"></div>Días 19 – 26</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="sched-card">Visa ConnectMiles</div>
+    </div>
+  </div>
+  <div class="sched-row" id="row3">
+    <div class="sched-period"><div class="dot dot-infinite"></div>Días 27 – 31</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="sched-card">Visa Infinite</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">Actualiza la página para refrescar · Banco Promerica GT</div>
+
+<script>
+  const today = new Date();
+  const day = today.getDate();
+  const month = today.getMonth();
+  const year = today.getFullYear();
+
+  const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+
+  document.getElementById('dateFull').textContent = days[today.getDay()] + ', ' + day + ' de ' + months[month] + ' ' + year;
+
+  function daysInMonth(m, y) { return new Date(y, m + 1, 0).getDate(); }
+
+  const dim = daysInMonth(month, year);
+
+  let info;
+  if (day >= 1 && day <= 18) {
+    info = { name: 'Visa Infinite', type: 'infinite', start: 1, end: 18, cutDay: 26, cutNextMonth: false, payDay: 21, payNextMonth: true };
+  } else if (day >= 19 && day <= 26) {
+    info = { name: 'Visa ConnectMiles', type: 'connect', start: 19, end: 26, cutDay: 18, cutNextMonth: true, payDay: 11, payNextMonth: true };
+  } else {
+    info = { name: 'Visa Infinite', type: 'infinite', start: 27, end: dim, cutDay: 26, cutNextMonth: true, payDay: 21, payNextMonth: true };
+  }
+
+  const card = document.getElementById('mainCard');
+  card.classList.add(info.type);
+
+  document.getElementById('cardTitle').textContent = info.name;
+  document.getElementById('cardSub').textContent = info.type === 'infinite'
+    ? 'Corte día 26  ·  Pago día 21 mes siguiente'
+    : 'Corte día 18  ·  Pago día 11 mes siguiente';
+
+  const periodDays = info.end - info.start + 1;
+  const elapsed = day - info.start + 1;
+  const pct = Math.round((elapsed / periodDays) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progStart').textContent = 'Día ' + info.start;
+  document.getElementById('progEnd').textContent = 'Día ' + info.end;
+  const remaining = info.end - day;
+  document.getElementById('progDays').textContent = remaining === 0 ? 'Último día' : remaining + ' días restantes';
+
+  document.getElementById('daysLeft').textContent = remaining === 0 ? 'Hoy termina' : remaining + (remaining === 1 ? ' día' : ' días');
+
+  const cutM = info.cutNextMonth ? month + 1 : month;
+  const cutDate = new Date(year, cutM, info.cutDay);
+  const payM = info.payNextMonth ? (info.cutNextMonth ? month + 2 : month + 1) : month;
+  const payDate = new Date(year, payM, info.payDay);
+
+  const diffPay = Math.round((payDate - today) / 86400000);
+  document.getElementById('daysFloat').textContent = diffPay + ' días';
+  document.getElementById('cutDate').textContent = info.cutDay + ' ' + months[cutM % 12].substring(0,3);
+  document.getElementById('payDate').textContent = info.payDay + ' ' + months[payM % 12].substring(0,3);
+
+  let nextLabel, daysToChange;
+  if (day < 19) {
+    daysToChange = 19 - day;
+    nextLabel = 'ConnectMiles el día 19 (en ' + daysToChange + ' días)';
+  } else if (day < 27) {
+    daysToChange = 27 - day;
+    nextLabel = 'Infinite el día 27 (en ' + daysToChange + ' días)';
+  } else {
+    daysToChange = (dim - day) + 19;
+    nextLabel = 'ConnectMiles el día 19 (en ' + daysToChange + ' días)';
+  }
+  document.getElementById('nextChange').textContent = nextLabel;
+
+  const activeRow = day <= 18 ? 'row1' : day <= 26 ? 'row2' : 'row3';
+  const activeEl = document.getElementById(activeRow);
+  activeEl.classList.add('active-row');
+  const indicator = document.createElement('div');
+  indicator.className = 'active-indicator';
+  indicator.textContent = 'Hoy';
+  activeEl.querySelector('div:last-child').prepend(indicator);
+</script>
+
+</body>
+</html>
